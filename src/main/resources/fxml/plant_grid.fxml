@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane fx:controller="com.example.gridproject.PlantGridController"
+            xmlns:fx="http://javafx.com/fxml/1">
+
+    <!-- Sidebar on the left -->
+    <left>
+        <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #ddd;" alignment="CENTER">
+            <Label text="Select a Plant" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+            <Button fx:id="plantType1" text="Plant 1">
+                <graphic>
+                    <ImageView fitWidth="50" fitHeight="50" fx:id="plantImage1"/>
+                </graphic>
+            </Button>
+
+            <Button fx:id="plantType2" text="Plant 2">
+                <graphic>
+                    <ImageView fitWidth="50" fitHeight="50" fx:id="plantImage2"/>
+                </graphic>
+            </Button>
+
+            <Button fx:id="plantType3" text="Plant 3">
+                <graphic>
+                    <ImageView fitWidth="50" fitHeight="50" fx:id="plantImage3"/>
+                </graphic>
+            </Button>
+        </VBox>
+    </left>
+
+    <!-- Grid in the center -->
+    <center>
+        <GridPane fx:id="gridPane" hgap="10" vgap="10" alignment="CENTER"/>
+    </center>
+</BorderPane>
+
+
+        <!--previous code-->
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<?import javafx.scene.layout.GridPane?>-->
+<!--<?import javafx.scene.control.Button?>-->
+
+<!--<GridPane fx:id="gridPane" fx:controller="com.example.gridproject.PlantGridController"-->
+<!--          xmlns:fx="http://javafx.com/fxml/1" hgap="10" vgap="10" alignment="CENTER">-->
+<!--    &lt;!&ndash; The controller will dynamically populate this grid &ndash;&gt;-->
+<!--</GridPane>-->
+
+
+<!--previous code-->
+        <!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<?import javafx.scene.layout.GridPane?>-->
+<!--<?import javafx.scene.image.ImageView?>-->
+<!--<?import javafx.scene.control.Label?>-->
+<!--<?import javafx.scene.layout.VBox?>-->
+
+<!--<GridPane fx:controller="com.example.gridproject.PlantGridController"-->
+<!--          xmlns:fx="http://javafx.com/fxml/1" hgap="10" vgap="10" alignment="CENTER">-->
+<!--    <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="CENTER" spacing="5">-->
+<!--        <ImageView fx:id="plantImage00" fitWidth="80" fitHeight="80"/>-->
+<!--        <Label text="Health: 100" fx:id="healthLabel00"/>-->
+<!--        <Label text="Water: 50" fx:id="waterLabel00"/>-->
+<!--    </VBox>-->
+
+<!--    <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" alignment="CENTER" spacing="5">-->
+<!--        <ImageView fx:id="plantImage01" fitWidth="80" fitHeight="80"/>-->
+<!--        <Label text="Health: 100" fx:id="healthLabel00"/>-->
+<!--        <Label text="Water: 50" fx:id="waterLabel00"/>-->
+<!--    </VBox>-->
+<!--</GridPane>-->
