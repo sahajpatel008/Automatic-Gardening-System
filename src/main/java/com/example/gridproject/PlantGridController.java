@@ -99,16 +99,17 @@ public class PlantGridController {
 
                 StackPane tileContainer = new StackPane();
                 tileContainer.setStyle("-fx-background-color: lightgray; -fx-padding: 10px; -fx-border-color: black;");
-                tileContainer.setMinSize(0.1*screenWidth,0.08*screenHeight);
-                tileContainer.setMaxSize(0.1*screenWidth,0.08*screenHeight);
+                double boxWidth = 0.08*screenWidth;
+                tileContainer.setMinSize(0.08*screenWidth,0.08*screenWidth);
+                tileContainer.setMaxSize(0.08*screenWidth,0.08*screenWidth);
 
                 VBox tileBox = new VBox();
                 tileBox.setSpacing(2);
                 tileBox.setStyle("-fx-alignment: center;");
 
                 ImageView imageView = new ImageView();
-                imageView.setFitWidth(50);
-                imageView.setFitHeight(50);
+                imageView.setFitWidth(0.25*tileContainer.getMinHeight());
+                imageView.setFitHeight(0.25*tileContainer.getMinHeight());
 
                 // Health Bar
                 HBox healthBarContainer = createBarContainer("GREEN");
