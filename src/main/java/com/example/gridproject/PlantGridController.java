@@ -151,13 +151,13 @@ public class PlantGridController {
                 VBox insectBox = new VBox();
                 insectBox.setSpacing(2);
                 insectBox.setStyle("-fx-alignment: center-right;");
-                insectBox.setMaxWidth(20);
+                insectBox.setMaxWidth(50);
 
                 ImageView[] insectViews = new ImageView[4];
                 for (int i = 0; i < 4; i++) {
                     insectViews[i] = new ImageView();
-                    insectViews[i].setFitWidth(12); // Keep them small
-                    insectViews[i].setFitHeight(12);
+                    insectViews[i].setFitWidth(24); // Keep them small
+                    insectViews[i].setFitHeight(24);
                     insectViews[i].setVisible(false);
                     insectBox.getChildren().add(insectViews[i]);
                 }
@@ -179,7 +179,7 @@ public class PlantGridController {
         this.insectAttack("pest1", 0, 2);
         this.insectAttack("pest2", 0, 2);
         this.insectAttack("pest3", 0, 2);
-        this.insectAttack("pest1", 0, 2);
+        this.insectAttack("pest4", 0, 2);
 
 
     }
