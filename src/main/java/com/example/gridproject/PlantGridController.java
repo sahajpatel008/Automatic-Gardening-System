@@ -12,11 +12,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.awt.*;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 // Parent Plant class with health, water, and nutrients properties
+
+
+
 class Plant {
     int health;
     int waterLevel;
@@ -67,7 +71,12 @@ public class PlantGridController {
     @FXML
     private ImageView plantImage1, plantImage2, plantImage3;
 
-    private final int GRID_SIZE = 5;
+    Toolkit toolkit = Toolkit.getDefaultToolkit();
+    Dimension screenSize = toolkit.getScreenSize();
+    final int screenWidth = (int) screenSize.getWidth();
+    final int screenHeight = (int) screenSize.getHeight();
+
+    private final int GRID_SIZE = 4;
     private final Button[][] buttons = new Button[GRID_SIZE][GRID_SIZE];
     private Image selectedPlantImage = null;
     private Plant selectedPlantObject = null;
@@ -90,6 +99,8 @@ public class PlantGridController {
 
                 StackPane tileContainer = new StackPane();
                 tileContainer.setStyle("-fx-background-color: lightgray; -fx-padding: 10px; -fx-border-color: black;");
+                tileContainer.setMinSize(0.1*screenWidth,0.08*screenHeight);
+                tileContainer.setMaxSize(0.1*screenWidth,0.08*screenHeight);
 
                 VBox tileBox = new VBox();
                 tileBox.setSpacing(2);
