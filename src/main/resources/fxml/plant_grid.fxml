@@ -28,6 +28,9 @@
                     <ImageView fitWidth="50" fitHeight="50" fx:id="plantImage3"/>
                 </graphic>
             </Button>
+
+            <Label text="Select Pesticide"/>
+            <ComboBox fx:id="pesticideComboBox" prefWidth="150"/>
         </VBox>
     </left>
 

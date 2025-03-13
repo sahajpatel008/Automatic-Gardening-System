@@ -3,6 +3,7 @@ package com.example.gridproject;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
@@ -15,14 +16,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.application.Platform;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
+
+import java.util.*;
+import java.util.List;
 import java.util.logging.*;
 
 import java.awt.*;
 import java.net.URL;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -72,6 +72,28 @@ class PlantClass3 extends Plant {
     }
 }
 
+class InsectViewInfo {
+    ImageView insectView;
+    String insectType;
+
+    public InsectViewInfo(ImageView insectView, String insectType) {
+        this.insectView = insectView;
+        this.insectType = insectType;
+    }
+
+    public ImageView getInsectView() {
+        return insectView;
+    }
+
+    public String getInsectType() {
+        return insectType;
+    }
+
+    public void setInsectType(String insectType) {
+        this.insectType = insectType;
+    }
+}
+
 public class PlantGridController {
     @FXML
     private GridPane gridPane;
@@ -79,6 +101,12 @@ public class PlantGridController {
     private Button plantType1, plantType2, plantType3;
     @FXML
     private ImageView plantImage1, plantImage2, plantImage3;
+    @FXML
+    private Button pesticideType1, pesticideType2, pesticideType3, pesticideType4;
+    @FXML
+    private ImageView pesticideImage1, pesticideImage2, pesticideImage3, pesticideImage4;
+    @FXML
+    private ComboBox<String> pesticideComboBox;
     @FXML
     private TextArea logTextArea;
 
@@ -93,15 +121,29 @@ public class PlantGridController {
     private Image selectedPlantImage = null;
     private Plant selectedPlantObject = null;
     private final Map<String, Plant> plantGridMap = new HashMap<>();
-    private final Map<String, ImageView[]> insectGridMap = new HashMap<>();
+    private final Map<String, List<InsectViewInfo>> insectGridMap = new HashMap<>();
+    private String selectedPesticide = "";
+    private final String[] pesticideImages = new String[4];
 
     public void initialize() {
         setupGrid();
         setupPlantSelection();
+        pesticideComboBox.getItems().addAll("pest1", "pest2", "pest3", "pest4");
+        setupPesticideSelection();
 
         loadImage(plantImage1, "images/plant.jpg");
         loadImage(plantImage2, "images/plant2.jpg");
         loadImage(plantImage3, "images/plant3.jpg");
+
+//        pesticideImages[0] = "images/pesticide.png";
+//        pesticideImages[1] = "images/pesticide1.png";
+//        pesticideImages[2] = "images/pesticide2.png";
+//        pesticideImages[3] = "images/pesticide3.png";
+//
+//        loadImage(pesticideImage1, pesticideImages[0]);
+//        loadImage(pesticideImage2, pesticideImages[1]);
+//        loadImage(pesticideImage3, pesticideImages[2]);
+//        loadImage(pesticideImage4, pesticideImages[3]);
 
         setupLogger();
     }
@@ -192,7 +234,7 @@ public class PlantGridController {
                 tileButton.setGraphic(imageView);
 
                 tileButton.setOnAction(event -> plantSelectedPlant(finalRow, finalCol, imageView, healthBarContainer, healthBar, healthLabel, waterBarContainer, waterBar, waterLabel, nutrientBarContainer, nutrientBar, nutrientLabel));
-
+                tileButton.setOnMouseClicked(event -> sprayPesticide(finalRow, finalCol));
                 // Create VBox for insects (right side)
                 VBox insectBox = new VBox();
                 insectBox.setSpacing(0);
@@ -202,18 +244,20 @@ public class PlantGridController {
                 // Shift more towards the right using translateX
                 insectBox.setTranslateX(20); // Adjust this value if needed
 
-                ImageView[] insectViews = new ImageView[4];
+                List<InsectViewInfo> insectList = new ArrayList<>();
                 for (int i = 0; i < 4; i++) {
-                    insectViews[i] = new ImageView();
-                    insectViews[i].setFitWidth(24); // Keep them small
-                    insectViews[i].setFitHeight(24);
-                    insectViews[i].setVisible(false);
-                    insectBox.getChildren().add(insectViews[i]);
+                    ImageView insectView = new ImageView();
+                    insectView.setFitWidth(24); // Keep them small
+                    insectView.setFitHeight(24);
+                    insectView.setVisible(false);
+
+                    InsectViewInfo insectViewInfo = new InsectViewInfo(insectView, null); // Insect type initially null
+                    insectList.add(insectViewInfo);
+
+                    insectBox.getChildren().add(insectView);
                 }
 
-
-                // Store insect views in the map
-                insectGridMap.put(finalRow + "," + finalCol, insectViews);
+                insectGridMap.put(finalRow + "," + finalCol, insectList);
 
                 tileBox.getChildren().addAll(imageView, tileButton, healthBarContainer, waterBarContainer, nutrientBarContainer);
                 HBox container = new HBox(tileBox, insectBox);
@@ -241,6 +285,16 @@ public class PlantGridController {
         plantType3.setOnAction(event -> selectPlant("/images/plant3.jpg", new PlantClass3(50, 50, 50)));
     }
 
+    private void setupPesticideSelection() {
+        pesticideComboBox.setOnAction(event -> {
+            String selectedPesticide = pesticideComboBox.getValue();
+            if (!Objects.equals(selectedPesticide, "")) {
+                this.selectedPesticide = selectedPesticide;
+                logger.log(Level.INFO, "Selected " + selectedPesticide);
+            }
+        });
+    }
+
     private void selectPlant(String imagePath, Plant plantObject) {
         URL imageUrl = getClass().getResource(imagePath);
         if (imageUrl == null) {
@@ -256,6 +310,30 @@ public class PlantGridController {
         }
 
     }
+
+    private void sprayPesticide(int r, int c){
+        String key = r + "," + c;
+        List<InsectViewInfo> insectViews = insectGridMap.get(key);
+        selectedPesticide = pesticideComboBox.getValue();
+        if (insectViews != null) {
+            for (InsectViewInfo insectViewInfo : insectViews) {
+                // Assuming InsectViewInfo has an ImageView object and an insectType
+                ImageView insectView = insectViewInfo.getInsectView(); // Get the ImageView object
+                String insectType = insectViewInfo.getInsectType(); // Get the insect type (if needed)
+
+                // Hide the insect by setting the ImageView's visibility to false
+                if(selectedPesticide.equals(insectType)) {
+                    insectView.setVisible(false);
+                }
+
+                // Log the pesticide spray action
+                logger.log(Level.INFO, "Sprayed pesticide on {0} at ({1}, {2})", new Object[]{insectType, r, c});
+            }
+        } else {
+            logger.info("No insects to spray at (" + r + "," + c + ")");
+        }
+    }
+
 
 
     private HBox createBarContainer(String color, String emoji) {
@@ -339,31 +417,26 @@ public class PlantGridController {
 
     public void insectAttack(String insectType, int row, int col) {
         String key = row + "," + col;
-        ImageView[] insectViews = insectGridMap.get(key);
+        List<InsectViewInfo> insectList = insectGridMap.get(key);
 
-        if (insectViews != null) {
-            for (ImageView insectView : insectViews) {
-                if (insectView.getImage() == null) {
+        if (insectList != null) {
+            for (InsectViewInfo insectInfo : insectList) {
+                if (insectInfo.getInsectView().getImage() == null) {
                     URL imageUrl = getClass().getResource("/images/" + insectType + ".png");
                     if (imageUrl != null) {
-                        insectView.setImage(new Image(imageUrl.toExternalForm()));
-                        insectView.setVisible(true);
+                        insectInfo.getInsectView().setImage(new Image(imageUrl.toExternalForm()));
+                        insectInfo.getInsectView().setVisible(true);
+                        insectInfo.setInsectType(insectType); // Set the insect type
 
-                        // Log warning in RED when an insect is added
                         logger.log(Level.WARNING, "WARNING: Insect attack: " + insectType + " at (" + row + "," + col);
-//                        updateLog("\n\u001B[31mWARNING: Insect added: " + insectType + " at (" + row + "," + col + ")\u001B[0m\n");
-
                         return;
                     } else {
                         logger.warning("Error: Insect image not found: " + insectType);
-//                        updateLog("Insect image not found: " + insectType);
                     }
                 }
             }
-            logger.info("No available slot for insect at (" + row + "," + col + ")");
-//            updateLog("No available slot for insect at (" + row + "," + col + ")");
+            logger.info("No available slot for insect at (" + row + "," + col);
         }
-
     }
 
 }
