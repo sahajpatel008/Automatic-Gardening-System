@@ -12,11 +12,18 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.application.Platform;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import java.util.logging.*;
 
 import java.awt.*;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // Parent Plant class with health, water, and nutrients properties
 
@@ -79,7 +86,7 @@ public class PlantGridController {
     final int screenWidth = (int) screenSize.getWidth();
     final int screenHeight = (int) screenSize.getHeight();
 
-    private final Logger logger = new Logger();
+    private static final Logger logger = Logger.getLogger(PlantGridController.class.getName());
     private final int GRID_SIZE = 4;
     private final Button[][] buttons = new Button[GRID_SIZE][GRID_SIZE];
     private Image selectedPlantImage = null;
@@ -95,11 +102,49 @@ public class PlantGridController {
         loadImage(plantImage2, "images/plant2.jpg");
         loadImage(plantImage3, "images/plant3.jpg");
 
-        updateLog();
+        setupLogger();
     }
 
-    private void updateLog() {
-        logTextArea.setText(logger.getLog());
+    private void setupLogger() {
+        Logger rootLogger = Logger.getLogger("");
+        Handler[] handlers = rootLogger.getHandlers();
+        for (Handler handler : handlers) {
+            rootLogger.removeHandler(handler); // Remove default console handler
+        }
+
+        Handler textAreaHandler = new Handler() {
+            @Override
+            public void publish(LogRecord record) {
+                Platform.runLater(() -> {
+                    String message = record.getLevel() + ": " + record.getMessage() + "\n";
+                    Text text = new Text(message);
+
+                    if (record.getLevel().equals(Level.SEVERE)) {
+                        text.setStyle("-fx-fill: red; -fx-font-weight: bold;");
+                    } else {
+                        text.setStyle("-fx-fill: black;");
+                    }
+
+                    logTextArea.appendText(text.getText());
+                });
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() throws SecurityException {
+            }
+        };
+
+        textAreaHandler.setLevel(Level.ALL);
+        rootLogger.addHandler(textAreaHandler);
+        logger.setLevel(Level.ALL);
+    }
+
+    private void updateLog(String message) {
+        logTextArea.appendText(message + "\n");
     }
 
     private void setupGrid() {
@@ -195,14 +240,16 @@ public class PlantGridController {
         URL imageUrl = getClass().getResource(imagePath);
         if (imageUrl == null) {
             System.err.println("Image not found in selectPlant: " + imagePath);
-            logger.addLog("Error: Couldn't retrieve image for selected plant: " + imagePath);
+            logger.log(Level.SEVERE, "Error: Couldn't retrieve image for selected plant: {0}", imagePath);
+//            updateLog("Image not found in selectPlant: " + imagePath);
         } else {
             selectedPlantImage = new Image(imageUrl.toExternalForm());
             selectedPlantObject = plantObject;
             System.out.println("Selected plant: " + plantObject.getClass().getSimpleName());
-            logger.addLog("Selected plant: " + plantObject.getClass().getSimpleName());
+            logger.log(Level.INFO, "Selected plant: {0}", plantObject.getClass().getSimpleName());
+//            updateLog("Selected plant: {0}" + plantObject.getClass().getSimpleName());
         }
-        updateLog();
+
     }
 
 
@@ -228,12 +275,14 @@ public class PlantGridController {
         URL imageUrl = getClass().getResource("/" + imagePath);
         if (imageUrl == null) {
             System.err.println("Image not found: " + imagePath);
-            logger.addLog("Error: Image not found: " + imagePath);
+            logger.log(Level.SEVERE, "Error: Image not found: {0}", imagePath);
+//            updateLog("Image not found: " + imagePath);
         } else {
             imageView.setImage(new Image(imageUrl.toExternalForm()));
             System.out.println("Loaded: " + imagePath);
+            logger.log(Level.INFO, "Loaded: {0}", imagePath);
+//            updateLog("Loaded: " + imagePath);
         }
-        updateLog();
     }
 
     private void plantSelectedPlant(int row, int col, ImageView imageView, HBox healthBarContainer, Rectangle healthBar, Label healthLabel, HBox waterBarContainer, Rectangle waterBar, Label waterLabel, HBox nutrientBarContainer, Rectangle nutrientBar, Label nutrientLabel) {
@@ -250,12 +299,13 @@ public class PlantGridController {
             waterBarContainer.setVisible(true);
             nutrientBarContainer.setVisible(true);
             System.out.println("Planted " + selectedPlantObject.getClass().getSimpleName() + " at (" + key + ")");
-            logger.addLog("Planted " + selectedPlantObject.getClass().getSimpleName() + " at (" + key + ")");
+            logger.log(Level.INFO, "Planted {0} at ({1})", new Object[]{selectedPlantObject.getClass().getSimpleName(), key});
+//            updateLog("Planted " + selectedPlantObject.getClass().getSimpleName() + " at (" + key + ")");
         } else {
             System.out.println("No plant selected!");
-            logger.addLog("No plant selected!");
+            logger.log(Level.WARNING, "No plant selected!");
+//            updateLog("No plant selected!");
         }
-        updateLog();
     }
 
     private void updateBar(Rectangle bar, Label label, int value) {
@@ -271,30 +321,28 @@ public class PlantGridController {
         ImageView[] insectViews = insectGridMap.get(key);
 
         if (insectViews != null) {
-            int availableSlot = -1;
-            for (int i = 0; i < 4; i++) {
-                if (insectViews[i].getImage() == null) {
-                    availableSlot = i;
-                    break;
+            for (ImageView insectView : insectViews) {
+                if (insectView.getImage() == null) {
+                    URL imageUrl = getClass().getResource("/images/" + insectType + ".png");
+                    if (imageUrl != null) {
+                        insectView.setImage(new Image(imageUrl.toExternalForm()));
+                        insectView.setVisible(true);
+
+                        // Log warning in RED when an insect is added
+                        logger.log(Level.WARNING, "WARNING: Insect attack: " + insectType + " at (" + row + "," + col);
+//                        updateLog("\n\u001B[31mWARNING: Insect added: " + insectType + " at (" + row + "," + col + ")\u001B[0m\n");
+
+                        return;
+                    } else {
+                        logger.warning("Error: Insect image not found: " + insectType);
+//                        updateLog("Insect image not found: " + insectType);
+                    }
                 }
             }
-            if (availableSlot != -1) {
-                URL imageUrl = getClass().getResource("/images/" + insectType + ".png");
-                if (imageUrl != null) {
-                    insectViews[availableSlot].setImage(new Image(imageUrl.toExternalForm()));
-                    insectViews[availableSlot].setVisible(true);
-                    System.out.println("Insect added: " + insectType + " at (" + row + "," + col + ")");
-                    logger.addLog("Insect added: " + insectType + " at (" + row + "," + col + ")");
-                } else {
-                    System.err.println("Insect image not found: " + insectType);
-                    logger.addLog("Error: Insect image not found: " + insectType);
-                }
-            } else {
-                System.out.println("No available slot for insect at (" + row + "," + col + ")");
-                logger.addLog("No available slot for insect at (" + row + "," + col + ")");
-            }
+            logger.info("No available slot for insect at (" + row + "," + col + ")");
+//            updateLog("No available slot for insect at (" + row + "," + col + ")");
         }
-        updateLog();
+
     }
 
 }
