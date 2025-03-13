@@ -1,6 +1,7 @@
 package com.example.gridproject;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -156,8 +157,8 @@ public class PlantGridController {
                 StackPane tileContainer = new StackPane();
                 tileContainer.setStyle("-fx-background-color: lightgray; -fx-padding: 10px; -fx-border-color: black;");
                 double boxWidth = 0.08*screenWidth;
-                tileContainer.setMinSize(0.08*screenWidth,0.08*screenWidth);
-                tileContainer.setMaxSize(0.08*screenWidth,0.08*screenWidth);
+                tileContainer.setMinSize(0.11*screenWidth,0.11*screenWidth);
+                tileContainer.setMaxSize(0.11*screenWidth,0.11*screenWidth);
 
                 VBox tileBox = new VBox();
                 tileBox.setSpacing(2);
@@ -168,21 +169,21 @@ public class PlantGridController {
                 imageView.setFitHeight(0.25*tileContainer.getMinHeight());
 
                 // Health Bar
-                HBox healthBarContainer = createBarContainer("GREEN");
-                Rectangle healthBar = (Rectangle) healthBarContainer.getChildren().get(0);
-                Label healthLabel = (Label) healthBarContainer.getChildren().get(1);
+                HBox healthBarContainer = createBarContainer("GREEN", "♥:");
+                Rectangle healthBar = (Rectangle) healthBarContainer.getChildren().get(1);
+                Label healthLabel = (Label) healthBarContainer.getChildren().get(2);
                 healthBarContainer.setVisible(false);
 
                 // Water Level Bar
-                HBox waterBarContainer = createBarContainer("LIGHTBLUE");
-                Rectangle waterBar = (Rectangle) waterBarContainer.getChildren().get(0);
-                Label waterLabel = (Label) waterBarContainer.getChildren().get(1);
+                HBox waterBarContainer = createBarContainer("LIGHTBLUE", "💧:");
+                Rectangle waterBar = (Rectangle) waterBarContainer.getChildren().get(1);
+                Label waterLabel = (Label) waterBarContainer.getChildren().get(2);
                 waterBarContainer.setVisible(false);
 
                 // Nutrient Level Bar
-                HBox nutrientBarContainer = createBarContainer("BROWN");
-                Rectangle nutrientBar = (Rectangle) nutrientBarContainer.getChildren().get(0);
-                Label nutrientLabel = (Label) nutrientBarContainer.getChildren().get(1);
+                HBox nutrientBarContainer = createBarContainer("BROWN", "🧬:");
+                Rectangle nutrientBar = (Rectangle) nutrientBarContainer.getChildren().get(1);
+                Label nutrientLabel = (Label) nutrientBarContainer.getChildren().get(2);
                 nutrientBarContainer.setVisible(false);
 
                 Button tileButton = new Button();
@@ -194,9 +195,12 @@ public class PlantGridController {
 
                 // Create VBox for insects (right side)
                 VBox insectBox = new VBox();
-                insectBox.setSpacing(2);
-                insectBox.setStyle("-fx-alignment: center-right;");
+                insectBox.setSpacing(0);
+                insectBox.setAlignment(Pos.CENTER_RIGHT);
                 insectBox.setMaxWidth(50);
+
+                // Shift more towards the right using translateX
+                insectBox.setTranslateX(20); // Adjust this value if needed
 
                 ImageView[] insectViews = new ImageView[4];
                 for (int i = 0; i < 4; i++) {
@@ -206,6 +210,7 @@ public class PlantGridController {
                     insectViews[i].setVisible(false);
                     insectBox.getChildren().add(insectViews[i]);
                 }
+
 
                 // Store insect views in the map
                 insectGridMap.put(finalRow + "," + finalCol, insectViews);
@@ -253,22 +258,38 @@ public class PlantGridController {
     }
 
 
-    private HBox createBarContainer(String color) {
+    private HBox createBarContainer(String color, String emoji) {
         HBox barContainer = new HBox();
         barContainer.setMinWidth(80);
         barContainer.setMaxWidth(80);
-        barContainer.setSpacing(2); // Reduce spacing
+        barContainer.setSpacing(5);
+        barContainer.setStyle("-fx-alignment: center-left;");
 
+        // Add emoji
+        Label emojiLabel = new Label(emoji);
+        emojiLabel.setStyle(
+                "-fx-font-size: 16px;" +
+                        "-fx-padding: 0 5 0 0;" +
+                        "-fx-font-family: 'Segoe UI Emoji';"
+        );
+        emojiLabel.setMinWidth(30); // Increase width to prevent truncation
+
+        // Create the progress bar rectangle
         Rectangle bar = new Rectangle(50, 5, Color.valueOf(color));
+        bar.setArcHeight(2);
+        bar.setArcWidth(2);
+
+        // Create label for percentage value
         Label label = new Label("100%");
-
-        // Remove extra padding/margin from label
         label.setMinWidth(25);
-        label.setStyle("-fx-text-fill: black; -fx-font-size: 10px; -fx-padding: 0; -fx-margin: 0;");
+        label.setStyle("-fx-text-fill: black; -fx-font-size: 10px; -fx-padding: 0;");
 
-        barContainer.getChildren().addAll(bar, label);
+        // ✅ Add emoji, bar, and label in order
+        barContainer.getChildren().addAll(emojiLabel, bar, label);
+
         return barContainer;
     }
+
 
 
     private void loadImage(ImageView imageView, String imagePath) {
