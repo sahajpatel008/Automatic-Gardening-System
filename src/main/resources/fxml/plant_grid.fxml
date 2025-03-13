@@ -35,6 +35,13 @@
     <center>
         <GridPane fx:id="gridPane" hgap="10" vgap="10" alignment="CENTER"/>
     </center>
+
+    <right>
+        <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #eee;" alignment="TOP_RIGHT">
+            <Label text="Event Log:" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <TextArea fx:id="logTextArea" editable="false" wrapText="true" prefWidth="250" prefHeight="400"/>
+        </VBox>
+    </right>
 </BorderPane>
 
 

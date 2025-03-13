@@ -3,6 +3,7 @@ package com.example.gridproject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -70,12 +71,15 @@ public class PlantGridController {
     private Button plantType1, plantType2, plantType3;
     @FXML
     private ImageView plantImage1, plantImage2, plantImage3;
+    @FXML
+    private TextArea logTextArea;
 
     Toolkit toolkit = Toolkit.getDefaultToolkit();
     Dimension screenSize = toolkit.getScreenSize();
     final int screenWidth = (int) screenSize.getWidth();
     final int screenHeight = (int) screenSize.getHeight();
 
+    private final Logger logger = new Logger();
     private final int GRID_SIZE = 4;
     private final Button[][] buttons = new Button[GRID_SIZE][GRID_SIZE];
     private Image selectedPlantImage = null;
@@ -89,6 +93,12 @@ public class PlantGridController {
         loadImage(plantImage1, "images/plant.jpg");
         loadImage(plantImage2, "images/plant2.jpg");
         loadImage(plantImage3, "images/plant3.jpg");
+
+        updateLog();
+    }
+
+    private void updateLog() {
+        logTextArea.setText(logger.getLog());
     }
 
     private void setupGrid() {
@@ -152,16 +162,18 @@ public class PlantGridController {
         plantType3.setOnAction(event -> selectPlant("/images/plant3.jpg", new PlantClass3(50, 50, 50)));
     }
 
-
     private void selectPlant(String imagePath, Plant plantObject) {
         URL imageUrl = getClass().getResource(imagePath);
         if (imageUrl == null) {
             System.err.println("Image not found in selectPlant: " + imagePath);
+            logger.addLog("Error: Couldn't retrieve image for selected plant: " + imagePath);
         } else {
             selectedPlantImage = new Image(imageUrl.toExternalForm());
             selectedPlantObject = plantObject;
             System.out.println("Selected plant: " + plantObject.getClass().getSimpleName());
+            logger.addLog("Selected plant: " + plantObject.getClass().getSimpleName());
         }
+        updateLog();
     }
 
 
@@ -187,10 +199,12 @@ public class PlantGridController {
         URL imageUrl = getClass().getResource("/" + imagePath);
         if (imageUrl == null) {
             System.err.println("Image not found: " + imagePath);
+            logger.addLog("Error: Image not found: " + imagePath);
         } else {
             imageView.setImage(new Image(imageUrl.toExternalForm()));
             System.out.println("Loaded: " + imagePath);
         }
+        updateLog();
     }
 
     private void plantSelectedPlant(int row, int col, ImageView imageView, HBox healthBarContainer, Rectangle healthBar, Label healthLabel, HBox waterBarContainer, Rectangle waterBar, Label waterLabel, HBox nutrientBarContainer, Rectangle nutrientBar, Label nutrientLabel) {
@@ -206,9 +220,13 @@ public class PlantGridController {
             healthBarContainer.setVisible(true);
             waterBarContainer.setVisible(true);
             nutrientBarContainer.setVisible(true);
+            System.out.println("Planted " + selectedPlantObject.getClass().getSimpleName() + " at (" + key + ")");
+            logger.addLog("Planted " + selectedPlantObject.getClass().getSimpleName() + " at (" + key + ")");
         } else {
             System.out.println("No plant selected!");
+            logger.addLog("No plant selected!");
         }
+        updateLog();
     }
 
     private void updateBar(Rectangle bar, Label label, int value) {
