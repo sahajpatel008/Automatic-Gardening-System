@@ -85,6 +85,7 @@ public class PlantGridController {
     private Image selectedPlantImage = null;
     private Plant selectedPlantObject = null;
     private final Map<String, Plant> plantGridMap = new HashMap<>();
+    private final Map<String, ImageView[]> insectGridMap = new HashMap<>();
 
     public void initialize() {
         setupGrid();
@@ -146,13 +147,41 @@ public class PlantGridController {
 
                 tileButton.setOnAction(event -> plantSelectedPlant(finalRow, finalCol, imageView, healthBarContainer, healthBar, healthLabel, waterBarContainer, waterBar, waterLabel, nutrientBarContainer, nutrientBar, nutrientLabel));
 
+                // Create VBox for insects (right side)
+                VBox insectBox = new VBox();
+                insectBox.setSpacing(2);
+                insectBox.setStyle("-fx-alignment: center-right;");
+                insectBox.setMaxWidth(20);
+
+                ImageView[] insectViews = new ImageView[4];
+                for (int i = 0; i < 4; i++) {
+                    insectViews[i] = new ImageView();
+                    insectViews[i].setFitWidth(12); // Keep them small
+                    insectViews[i].setFitHeight(12);
+                    insectViews[i].setVisible(false);
+                    insectBox.getChildren().add(insectViews[i]);
+                }
+
+                // Store insect views in the map
+                insectGridMap.put(finalRow + "," + finalCol, insectViews);
+
                 tileBox.getChildren().addAll(imageView, tileButton, healthBarContainer, waterBarContainer, nutrientBarContainer);
-                tileContainer.getChildren().add(tileBox);
+                HBox container = new HBox(tileBox, insectBox);
+                tileContainer.getChildren().add(container);
                 gridPane.add(tileContainer, col, row);
 
                 buttons[row][col] = tileButton;
+
+
             }
         }
+
+        this.insectAttack("pest1", 0, 2);
+        this.insectAttack("pest2", 0, 2);
+        this.insectAttack("pest3", 0, 2);
+        this.insectAttack("pest1", 0, 2);
+
+
     }
 
     // Setup plant selection buttons
@@ -236,4 +265,36 @@ public class PlantGridController {
         bar.setVisible(true);
         label.setVisible(true);
     }
+
+    public void insectAttack(String insectType, int row, int col) {
+        String key = row + "," + col;
+        ImageView[] insectViews = insectGridMap.get(key);
+
+        if (insectViews != null) {
+            int availableSlot = -1;
+            for (int i = 0; i < 4; i++) {
+                if (insectViews[i].getImage() == null) {
+                    availableSlot = i;
+                    break;
+                }
+            }
+            if (availableSlot != -1) {
+                URL imageUrl = getClass().getResource("/images/" + insectType + ".png");
+                if (imageUrl != null) {
+                    insectViews[availableSlot].setImage(new Image(imageUrl.toExternalForm()));
+                    insectViews[availableSlot].setVisible(true);
+                    System.out.println("Insect added: " + insectType + " at (" + row + "," + col + ")");
+                    logger.addLog("Insect added: " + insectType + " at (" + row + "," + col + ")");
+                } else {
+                    System.err.println("Insect image not found: " + insectType);
+                    logger.addLog("Error: Insect image not found: " + insectType);
+                }
+            } else {
+                System.out.println("No available slot for insect at (" + row + "," + col + ")");
+                logger.addLog("No available slot for insect at (" + row + "," + col + ")");
+            }
+        }
+        updateLog();
+    }
+
 }
