@@ -63,27 +63,27 @@ public class Main extends Application {
         launch();
     }
 
-    public static void runFor24Hours() {
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        Runnable taskWrapper = () -> {
-            try {
-                // write here
-//                task();
-                gardenHandler.iteration();
-                for (Plant plant : gardenHandler.getGrid().values()){
-                    plant.displayStatus();
-                }
-            } catch (Exception e) {
-                System.err.println("Error in task execution: " + e.getMessage());
-            }
-        };
-
-        scheduler.scheduleAtFixedRate(taskWrapper, 0, 1, TimeUnit.SECONDS);
-
-        // Schedule shutdown after 24 hours
-        scheduler.schedule(() -> {
-            System.out.println("24-hour period complete. Shutting down.");
-            scheduler.shutdown();
-        }, 24, TimeUnit.HOURS);
-    }
+//    public static void runFor24Hours() {
+//        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+//        Runnable taskWrapper = () -> {
+//            try {
+//                // write here
+////                task();
+//                gardenHandler.iteration();
+//                for (Plant plant : gardenHandler.getGrid().values()){
+//                    plant.displayStatus();
+//                }
+//            } catch (Exception e) {
+//                System.err.println("Error in task execution: " + e.getMessage());
+//            }
+//        };
+//
+//        scheduler.scheduleAtFixedRate(taskWrapper, 0, 1, TimeUnit.SECONDS);
+//
+//        // Schedule shutdown after 24 hours
+//        scheduler.schedule(() -> {
+//            System.out.println("24-hour period complete. Shutting down.");
+//            scheduler.shutdown();
+//        }, 24, TimeUnit.HOURS);
+//    }
 }
