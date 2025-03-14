@@ -8,10 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.application.Platform;
@@ -118,6 +115,15 @@ public class PlantGridController {
     @FXML
     private TextArea logTextArea;
 
+    // Added Weather, Temp, and Day
+    @FXML
+    private Label weatherLabel;
+    @FXML
+    private Label tempLabel;
+    @FXML
+    private Label dayLabel;
+
+
     Toolkit toolkit = Toolkit.getDefaultToolkit();
     Dimension screenSize = toolkit.getScreenSize();
     final int screenWidth = (int) screenSize.getWidth();
@@ -136,6 +142,7 @@ public class PlantGridController {
     private boolean selectedFertilizer = false;
 
     public void initialize() {
+        setupWeatherPanel();
         setupGrid();
         setupPlantSelection();
         pesticideComboBox.getItems().addAll("pest1", "pest2", "pest3", "pest4");
@@ -160,6 +167,35 @@ public class PlantGridController {
 //        loadImage(pesticideImage4, pesticideImages[3]);
 
         setupLogger();
+    }
+
+    private void setupWeatherPanel() {
+        HBox weatherPanel = new HBox();
+        weatherPanel.setSpacing(20);
+        weatherPanel.setAlignment(Pos.CENTER);
+        weatherPanel.setStyle("-fx-background-color: lightblue; -fx-padding: 10px;");
+
+        weatherLabel = new Label("Weather: Clear");
+        tempLabel = new Label("Temp: 59°F");
+        dayLabel = new Label("Day: 1");
+
+        weatherLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: black;");
+        tempLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: black;");
+        dayLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: black;");
+
+        weatherPanel.getChildren().addAll(weatherLabel, tempLabel, dayLabel);
+
+        // Add panel at the top of the existing layout
+        BorderPane root = (BorderPane) gridPane.getParent();
+        root.setTop(weatherPanel);
+
+
+    }
+
+    private void updateWeather(String weather, int temperature, int day) {
+        weatherLabel.setText("Weather: " + weather);
+        tempLabel.setText("Temp: " + temperature + "°F");
+        dayLabel.setText("Day: " + day);
     }
 
     private void setupLogger() {
@@ -243,7 +279,7 @@ public class PlantGridController {
                 nutrientBarContainer.setVisible(false);
 
                 Button tileButton = new Button();
-                tileButton.setMinSize(180, 180);
+                tileButton.setMinSize(100, 100);
                 tileButton.setStyle("-fx-background-color: LIGHTBLUE;");
                 tileButton.setGraphic(imageView);
 
@@ -290,6 +326,7 @@ public class PlantGridController {
         this.insectAttack("pest3", 0, 2);
         this.insectAttack("pest4", 0, 2);
 
+        updateWeather("Sunny🌞", 70, 28);
     }
 
     private void functionCumulative(int row, int col) {
