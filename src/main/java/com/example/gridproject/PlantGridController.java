@@ -22,52 +22,52 @@ import java.awt.*;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import GardenEntities.*;
 // Parent Plant class with health, water, and nutrients properties
 
 
 
-class Plant {
-    int health;
-    int waterLevel;
-    int nutrientsLevel;
-
-    public Plant() {
-        this.health = 100;
-        this.waterLevel = 100;
-        this.nutrientsLevel = 100;
-    }
-
-    public Plant(int h, int w, int n){
-        this.health = h;
-        this.waterLevel = w;
-        this.nutrientsLevel = n;
-    }
-
-    public int getHealth() { return health; }
-    public void setHealth(int health) { this.health = health; }
-    public int getWaterLevel() { return waterLevel; }
-    public void setWaterLevel(int waterLevel) { this.waterLevel = waterLevel; }
-    public int getNutrientsLevel() { return nutrientsLevel; }
-    public void setNutrientsLevel(int nutrientsLevel) { this.nutrientsLevel = nutrientsLevel; }
-}
-
-// Child classes inheriting from Plant
-class PlantClass1 extends Plant {
-    PlantClass1(int h, int w, int n){
-        super(h, w, n);
-    }
-}
-class PlantClass2 extends Plant {
-    PlantClass2(int h, int w, int n){
-        super(h, w, n);
-    }
-}
-class PlantClass3 extends Plant {
-    PlantClass3(int h, int w, int n){
-        super(h, w, n);
-    }
-}
+//class Plant {
+//    int health;
+//    int waterLevel;
+//    int nutrientsLevel;
+//
+//    public Plant() {
+//        this.health = 100;
+//        this.waterLevel = 100;
+//        this.nutrientsLevel = 100;
+//    }
+//
+//    public Plant(int h, int w, int n){
+//        this.health = h;
+//        this.waterLevel = w;
+//        this.nutrientsLevel = n;
+//    }
+//
+//    public int getHealth() { return health; }
+//    public void setHealth(int health) { this.health = health; }
+//    public int getWaterLevel() { return waterLevel; }
+//    public void setWaterLevel(int waterLevel) { this.waterLevel = waterLevel; }
+//    public int getNutrientsLevel() { return nutrientsLevel; }
+//    public void setNutrientsLevel(int nutrientsLevel) { this.nutrientsLevel = nutrientsLevel; }
+//}
+//
+//// Child classes inheriting from Plant
+//class PlantClass1 extends Plant {
+//    PlantClass1(int h, int w, int n){
+//        super(h, w, n);
+//    }
+//}
+//class PlantClass2 extends Plant {
+//    PlantClass2(int h, int w, int n){
+//        super(h, w, n);
+//    }
+//}
+//class PlantClass3 extends Plant {
+//    PlantClass3(int h, int w, int n){
+//        super(h, w, n);
+//    }
+//}
 
 class InsectViewInfo {
     ImageView insectView;
@@ -134,8 +134,9 @@ public class PlantGridController {
     private final Button[][] buttons = new Button[GRID_SIZE][GRID_SIZE];
     private Image selectedPlantImage = null;
     private Plant selectedPlantObject = null;
-    private final Map<String, Plant> plantGridMap = new HashMap<>();
-    private final Map<String, List<InsectViewInfo>> insectGridMap = new HashMap<>();
+//    private final Map<String, Plant> plantGridMap = new HashMap<>();
+    private HashMap<Integer, Plant> plantGridMap = new HashMap<>();
+    private HashMap<Integer, List<InsectViewInfo>> insectGridMap = new HashMap<>();
     private String selectedPesticide = "";
     private final String[] pesticideImages = new String[4];
     private boolean selectedWater = false;
@@ -188,8 +189,25 @@ public class PlantGridController {
         // Add panel at the top of the existing layout
         BorderPane root = (BorderPane) gridPane.getParent();
         root.setTop(weatherPanel);
+    }
 
-
+    public void printGridDetails() {
+        System.out.println("----- Grid Details -----");
+        for (int row = 0; row < GRID_SIZE; row++) {
+            for (int col = 0; col < GRID_SIZE; col++) {
+                int key = getKey(row,col);
+                Plant plant = plantGridMap.get(key);
+                System.out.println(plant);
+                if (plant != null) {
+                    System.out.println("Position: (" + row + "," + col + ")");
+                    System.out.println("Plant Type: " + plant.getClass().getSimpleName());
+                    System.out.println("Health: " + plant.getHealth());
+                    System.out.println("Water Level: " + plant.getWaterLevel());
+                    System.out.println("Nutrient Level: " + plant.getNutrientLevel());
+                    System.out.println("-----------------------");
+                }
+            }
+        }
     }
 
     private void updateWeather(String weather, int temperature, int day) {
@@ -308,7 +326,7 @@ public class PlantGridController {
                     insectBox.getChildren().add(insectView);
                 }
 
-                insectGridMap.put(finalRow + "," + finalCol, insectList);
+                insectGridMap.put(getKey(row, col), insectList);
 
                 tileBox.getChildren().addAll(imageView, tileButton, healthBarContainer, waterBarContainer, nutrientBarContainer);
                 HBox container = new HBox(tileBox, insectBox);
@@ -337,9 +355,9 @@ public class PlantGridController {
 
     // Setup plant selection buttons
     private void setupPlantSelection() {
-        plantType1.setOnAction(event -> selectPlant("/images/plant.jpg", new PlantClass1(100, 100, 100)));
-        plantType2.setOnAction(event -> selectPlant("/images/plant2.jpg", new PlantClass2(100, 50, 75)));
-        plantType3.setOnAction(event -> selectPlant("/images/plant3.jpg", new PlantClass3(50, 50, 50)));
+        plantType1.setOnAction(event -> selectPlant("/images/plant.jpg", new Plant1(-1, "Flower", 100, 100, 100)));
+        plantType2.setOnAction(event -> selectPlant("/images/plant2.jpg", new Plant2(-1, "Kaatan", 100, 50, 75)));
+        plantType3.setOnAction(event -> selectPlant("/images/plant3.jpg", new Plant3(-1, "Ganja", 50, 50, 50)));
     }
 
     private void setupPesticideSelection() {
@@ -369,7 +387,7 @@ public class PlantGridController {
     }
 
     private void sprayPesticide(int r, int c){
-        String key = r + "," + c;
+        int key = getKey(r,c);
         List<InsectViewInfo> insectViews = insectGridMap.get(key);
         selectedPesticide = pesticideComboBox.getValue();
         if(selectedPesticide == null){
@@ -402,8 +420,12 @@ public class PlantGridController {
         });
     }
 
+    private int getKey(int row, int col){
+        return row*GRID_SIZE+col;
+    }
+
     private void addFertilizer(int r, int c){
-        String key = r + "," + c;
+        int key = getKey(r,c);
         Plant selectedPlant = plantGridMap.get(key);
 
         if(selectedFertilizer) {
@@ -411,7 +433,7 @@ public class PlantGridController {
                 logger.log(Level.INFO, "No plant at (" + (r+1) + "," + (c+1) + ")");
             } else {
                 // update backend here
-                selectedPlant.setNutrientsLevel(100); // Set nutrient level to 100
+                selectedPlant.setNutrientLevel(100); // Set nutrient level to 100
 
                 logger.log(Level.INFO, "Fertilizer applied at (" + (r + 1) + "," + (c + 1) + ")");
 
@@ -428,7 +450,7 @@ public class PlantGridController {
     }
 
     private void updateGrid(int r, int c){
-        String key = r + "," + c;
+        int key = getKey(r,c);
         Plant selectedPlant = plantGridMap.get(key);
 
         // for water
@@ -443,11 +465,11 @@ public class PlantGridController {
         Label nutrientLabel = (Label) nutrientBarContainer.getChildren().get(2);
 
         updateBar(waterBar, waterLabel, selectedPlant.getWaterLevel());
-        updateBar(nutrientBar, nutrientLabel, selectedPlant.getNutrientsLevel());
+        updateBar(nutrientBar, nutrientLabel, selectedPlant.getNutrientLevel());
     }
 
     private void dripIrrigation(int r, int c){
-        String key = r + "," + c;
+        int key = getKey(r,c);
         Plant selectedPlant = plantGridMap.get(key);
 
         if(selectedWater) {
@@ -455,6 +477,7 @@ public class PlantGridController {
                 logger.log(Level.INFO, "No plant at (" + (r+1) + "," + (c+1) + ")");
             } else {
                 selectedPlant.setWaterLevel(100);
+                selectedPlant.displayStatus();
                 plantGridMap.put(key, selectedPlant);
                 logger.log(Level.INFO, "Irrigation carried out at (" + (r+1) + "," + (c+1) +")");
                 updateGrid(r, c);
@@ -512,7 +535,7 @@ public class PlantGridController {
     }
 
     private void plantSelectedPlant(int row, int col, ImageView imageView, HBox healthBarContainer, Rectangle healthBar, Label healthLabel, HBox waterBarContainer, Rectangle waterBar, Label waterLabel, HBox nutrientBarContainer, Rectangle nutrientBar, Label nutrientLabel) {
-        String key = row + "," + col;
+        int key = getKey(row,col);
 
         if(plantGridMap.get(key) != null){
             return;
@@ -520,16 +543,20 @@ public class PlantGridController {
         if (selectedPlantImage != null && selectedPlantObject != null) {
             imageView.setImage(selectedPlantImage);
             plantGridMap.put(key, selectedPlantObject);
+            selectedPlantObject.setCoordinate(key);
+            System.out.println("Place Plant Function");
+            selectedPlantObject.displayStatus();
 
             updateBar(healthBar, healthLabel, selectedPlantObject.getHealth());
             updateBar(waterBar, waterLabel, selectedPlantObject.getWaterLevel());
-            updateBar(nutrientBar, nutrientLabel, selectedPlantObject.getNutrientsLevel());
+            updateBar(nutrientBar, nutrientLabel, selectedPlantObject.getNutrientLevel());
 
             healthBarContainer.setVisible(true);
             waterBarContainer.setVisible(true);
             nutrientBarContainer.setVisible(true);
             System.out.println("Planted " + selectedPlantObject.getClass().getSimpleName() + " at (" + (row+1) + "," + (col+1) + ")");
             logger.log(Level.INFO, "Planted "+ selectedPlantObject.getClass().getSimpleName() +" at (" + (row+1) + "," + (col+1) + ")");
+            printGridDetails();
 //            updateLog("Planted " + selectedPlantObject.getClass().getSimpleName() + " at (" + (row+1) + "," + (col+1) + ")");
         } else {
             System.out.println("No plant selected!");
@@ -547,7 +574,7 @@ public class PlantGridController {
     }
 
     public void insectAttack(String insectType, int row, int col) {
-        String key = row + "," + col;
+        int key = getKey(row,col);
         List<InsectViewInfo> insectList = insectGridMap.get(key);
         Plant selectedPlant = plantGridMap.get(key);
 //        if(selectedPlant != null) {
