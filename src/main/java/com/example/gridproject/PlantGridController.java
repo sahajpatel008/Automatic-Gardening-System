@@ -191,7 +191,7 @@ public class PlantGridController {
             try {
                 // write here
 //                task();
-                gardenHandler.iteration(true);
+                gardenHandler.iteration(isAutoPilot);
                 for (Plant plant : gardenHandler.getGrid().values()){
                     plant.displayStatus();
                 }

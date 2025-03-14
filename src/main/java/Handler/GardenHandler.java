@@ -125,7 +125,7 @@ public class GardenHandler {
         int health = plant.getWaterLevel()+plant.getFertilizerLevel();
         health = health/2;
         if(plant.getSensor().isInfected()) {
-            health -= 2;
+            health -= 7;
         }
 
         plant.setHealth(health);
@@ -187,13 +187,13 @@ public class GardenHandler {
     // Functions to call every second
     private void dryPlants(){
         for(Plant plant: grid.values()){
-            plant.setWaterLevel((int) (plant.getWaterLevel()-(10*Math.random())));
+            if(plant.getWaterLevel()> 10)plant.setWaterLevel((int) (plant.getWaterLevel()-(10*Math.random())));
         }
     }
 
     private void absorbFertilizer(){
         for(Plant plant: grid.values()){
-            plant.setFertilizerLevel((int) (plant.getFertilizerLevel()-(2*Math.random())));
+            if(plant.getFertilizerLevel()>2) plant.setFertilizerLevel((int) (plant.getFertilizerLevel()-(2*Math.random())));
         }
     }
 
