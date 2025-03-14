@@ -152,7 +152,7 @@ public class PlantGridController {
     private final String[] pesticideImages = new String[4];
     private boolean selectedWater = false;
     private boolean selectedFertilizer = false;
-    private boolean isAutomatic = true;
+    private boolean isAutoPilot = false;
 
     public void initialize() {
         setupWeatherPanel();
@@ -162,13 +162,13 @@ public class PlantGridController {
         setupPesticideSelection();
         waterTrigger();
         fertilizerTrigger();
+        createAutoPilotButton();
 
         loadImage(plantImage1, "images/plant.jpg");
         loadImage(plantImage2, "images/plant2.jpg");
         loadImage(plantImage3, "images/plant3.jpg");
         loadImage(waterDrop, "images/waterdrop.jpg");
         loadImage(manure, "images/fertilizer.png");
-        isAutomatic = true;
         runFor24Hours();
 
 //        pesticideImages[0] = "images/pesticide.png";
@@ -287,7 +287,7 @@ public class PlantGridController {
         }
     }
 
-        private void setupWeatherPanel() {
+    private void setupWeatherPanel() {
         HBox weatherPanel = new HBox();
         weatherPanel.setSpacing(20);
         weatherPanel.setAlignment(Pos.CENTER);
@@ -306,6 +306,22 @@ public class PlantGridController {
         // Add panel at the top of the existing layout
         BorderPane root = (BorderPane) gridPane.getParent();
         root.setTop(weatherPanel);
+    }
+
+    private void createAutoPilotButton() {
+        Button autoPilotButton = new Button("AutoPilot");
+        autoPilotButton.setMinSize(120, 40);
+        autoPilotButton.setStyle("-fx-background-color: GREEN; -fx-text-fill: white; -fx-font-size: 14px;");
+
+        autoPilotButton.setOnAction(event -> startAutoPilot());
+
+        VBox parent = (VBox) fertilizerButton.getParent();
+        parent.getChildren().add(autoPilotButton);
+    }
+
+    private void startAutoPilot() {
+        this.isAutoPilot = !this.isAutoPilot;
+        System.out.println("Autopilot status: "+isAutoPilot);
     }
 
     public void printGridDetails() {
