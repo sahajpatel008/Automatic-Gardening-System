@@ -1,14 +1,27 @@
 package com.example.gridproject;
 
+import GardenEntities.Plant;
+import GardenEntities.Plant1;
+import Handler.GardenHandler;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Main extends Application {
+    private static GardenHandler gardenHandler;
+
     @Override
     public void start(Stage stage) throws IOException {
 //        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/plant_grid.fxml"));
@@ -31,6 +44,33 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+//        gardenHandler = new GardenHandler(new TextArea());
+//        gardenHandler.addPlant(0, new Plant1(0));
+//        runFor24Hours();
         launch();
+    }
+
+    public static void runFor24Hours() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        Runnable taskWrapper = () -> {
+            try {
+                // write here
+//                task();
+                gardenHandler.iteration();
+                for (Plant plant : gardenHandler.getGrid().values()){
+                    plant.displayStatus();
+                }
+            } catch (Exception e) {
+                System.err.println("Error in task execution: " + e.getMessage());
+            }
+        };
+
+        scheduler.scheduleAtFixedRate(taskWrapper, 0, 1, TimeUnit.SECONDS);
+
+        // Schedule shutdown after 24 hours
+        scheduler.schedule(() -> {
+            System.out.println("24-hour period complete. Shutting down.");
+            scheduler.shutdown();
+        }, 24, TimeUnit.HOURS);
     }
 }

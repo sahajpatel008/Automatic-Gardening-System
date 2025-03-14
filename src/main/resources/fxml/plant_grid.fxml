@@ -31,6 +31,22 @@
 
             <Label text="Select Pesticide"/>
             <ComboBox fx:id="pesticideComboBox" prefWidth="150"/>
+
+
+
+            <Label text="Water"/>
+            <Button fx:id="waterButton" text="Water">
+                <graphic>
+                    <ImageView fitWidth="50" fitHeight="50" fx:id="waterDrop"/>
+                </graphic>
+            </Button>
+
+            <Label text="Fertilizer"/>
+            <Button fx:id="fertilizerButton" text="Fertilizer">
+                <graphic>
+                    <ImageView fitWidth="50" fitHeight="50" fx:id="manure"/>
+                </graphic>
+            </Button>
         </VBox>
     </left>
 
