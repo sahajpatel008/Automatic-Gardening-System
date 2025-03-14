@@ -49,10 +49,6 @@ public class Plant {
         pest.destroyPest();
     }
 
-
-
-
-
     public void addFertilizer(){
         this.fertilizerLevel = 100;
     }

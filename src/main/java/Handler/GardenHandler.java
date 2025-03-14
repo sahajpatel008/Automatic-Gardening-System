@@ -67,6 +67,10 @@ public class GardenHandler {
         logger.setLevel(Level.ALL);
     }
 
+    // Weather Functions
+
+
+
     // Important Functions
     public boolean hasPlant(int coordinate){
         return grid.containsKey(coordinate);
@@ -74,6 +78,7 @@ public class GardenHandler {
 
     public void removePlant(int coordinate){
         grid.remove(coordinate);
+        logger.log(Level.INFO, "Removed plant at " + coordinate +"th tile");
     }
 
     public Plant getPlant(int coordinate){
@@ -82,7 +87,7 @@ public class GardenHandler {
 
     public void addPlant(int coordinate, Plant plant){
         grid.put(coordinate,plant);
-
+        logger.log(Level.INFO, "Added"+ plant.ID+" plant at " + coordinate +"th tile");
     }
     // public? for manual calling?
     public void waterPlant(Plant plant){
@@ -96,22 +101,35 @@ public class GardenHandler {
         if(pest.getID().equals(plant.ID)){
             plant.setPestInfected(true);
             plant.setPest(pest);
+            logger.log(Level.INFO, "Pest infection at ("+ plant.getCoordinate()+")th tile");
         }
     }
 
     public void addPesticide(Plant plant, String pesticideType){
         if(plant.ID.equals(pesticideType)){
             plant.addPesticide();
+            logger.log(Level.INFO, "Anti-Pest infection at ("+ plant.getCoordinate()+")th tile");
         }
     }
 
     public void addFertilizer(Plant plant){
         if(plant.getSensor().needsFertilizer()){
             plant.addFertilizer();
+            logger.log(Level.INFO, "Added fertilizer at ("+ plant.getCoordinate()+")th tile");
         }
     }
 
     // Automatic Functions
+
+    public void changeHealth(Plant plant){
+        int health = plant.getWaterLevel()+plant.getFertilizerLevel();
+        health = health/2;
+        if(plant.getSensor().isInfected()) {
+            health -= 2;
+        }
+
+        plant.setHealth(health);
+    }
 
     public void autoWaterPlants(){
         for(Plant plant: grid.values()){
@@ -121,7 +139,7 @@ public class GardenHandler {
 
     public void autoAddPesticide(){
         for(Plant plant: grid.values()){
-            if(plant.getSensor().isInfected()) plant.addPesticide();
+            if(plant.getSensor().isInfected()) addPesticide(plant, plant.ID);
         }
     }
 
@@ -137,28 +155,28 @@ public class GardenHandler {
 
         if (randomNumber == 0){
             for(Plant plant : grid.values()){
-                if(Objects.equals(plant.ID, "Plant1")){
+                if(!plant.isPestInfected() && Objects.equals(plant.ID, "Plant1")){
                     if(Math.random() > 0.3) pestInfection(plant, new Pest1(plant));
                 }
             }
         }
         else if(randomNumber == 1){
             for(Plant plant : grid.values()){
-                if(Objects.equals(plant.ID, "Plant2")){
+                if(!plant.isPestInfected() && Objects.equals(plant.ID, "Plant2")){
                     if(Math.random() > 0.3) pestInfection(plant, new Pest2(plant));
                 }
             }
         }
         else if(randomNumber == 2){
             for(Plant plant : grid.values()){
-                if(Objects.equals(plant.ID, "Plant3")){
+                if(!plant.isPestInfected() && Objects.equals(plant.ID, "Plant3")){
                     if(Math.random() > 0.3) pestInfection(plant, new Pest3(plant));
                 }
             }
         }
         else if(randomNumber == 3){
             for(Plant plant : grid.values()){
-                if(Objects.equals(plant.ID, "Plant4")){
+                if(!plant.isPestInfected() && Objects.equals(plant.ID, "Plant4")){
                     if(Math.random() > 0.3) pestInfection(plant, new Pest4(plant));
                 }
             }
@@ -179,29 +197,45 @@ public class GardenHandler {
         }
     }
 
-    private boolean deathCondition(Plant plant){
-        if(plant.getFertilizerLevel() <=5 && plant.getWaterLevel() <= 2) return true;
-        return false;
+    private void updateHealth(){
+        for(Plant plant: grid.values()){
+            changeHealth(plant);
+        }
     }
+
 
     private void deadPlant(){
         for(Plant plant: grid.values()){
-            if(deathCondition(plant)) removePlant(plant.getCoordinate());
+            if(plant.getHealth() <= 0) {
+                removePlant(plant.getCoordinate());
+                logger.log(Level.INFO, "Dead plant at ("+ plant.getCoordinate()+")");
+            }
         }
     }
 
     // Functions to call every second for Automation
 
-    public void iteration(){
-        //System.out.println(grid.size());
+    private void essentialFunctions(){
         dryPlants();
         absorbFertilizer();
+        pestInvasion();
+        updateHealth();
+        deadPlant();
+    }
+
+    private void automaticFunctions(){
         autoWaterPlants();
         autoAddFertilizer();
-        pestInvasion();
-        deadPlant();
-        if(count == 0) {
-            autoAddPesticide();
+    }
+
+    public void iteration(boolean isAutomatic){
+        //System.out.println(grid.size());
+        essentialFunctions();
+        if(isAutomatic){
+            automaticFunctions();
+            if(count == 0) {
+                autoAddPesticide();
+            }
         }
         count++;
         count%=15;

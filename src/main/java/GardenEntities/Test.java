@@ -23,7 +23,7 @@ public class Test {
             try {
                 // write here
 //                task();
-                handler.iteration();
+                handler.iteration(true);
                 handler.getGrid().get(0).displayStatus();
             } catch (Exception e) {
                 System.err.println("Error in task execution: " + e.getMessage());

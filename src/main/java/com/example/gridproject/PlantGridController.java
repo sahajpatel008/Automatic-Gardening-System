@@ -152,6 +152,7 @@ public class PlantGridController {
     private final String[] pesticideImages = new String[4];
     private boolean selectedWater = false;
     private boolean selectedFertilizer = false;
+    private boolean isAutomatic = true;
 
     public void initialize() {
         setupWeatherPanel();
@@ -167,6 +168,7 @@ public class PlantGridController {
         loadImage(plantImage3, "images/plant3.jpg");
         loadImage(waterDrop, "images/waterdrop.jpg");
         loadImage(manure, "images/fertilizer.png");
+        isAutomatic = true;
         runFor24Hours();
 
 //        pesticideImages[0] = "images/pesticide.png";
@@ -189,7 +191,7 @@ public class PlantGridController {
             try {
                 // write here
 //                task();
-                gardenHandler.iteration();
+                gardenHandler.iteration(true);
                 for (Plant plant : gardenHandler.getGrid().values()){
                     plant.displayStatus();
                 }
@@ -590,12 +592,17 @@ public class PlantGridController {
             Rectangle nutrientBar = (Rectangle) nutrientBarContainer.getChildren().get(1);
             Label nutrientLabel = (Label) nutrientBarContainer.getChildren().get(2);
 
-            // for pest
+            // for health
+            HBox healthBarContainer = (HBox) ((VBox) ((HBox) tileContainer.getChildren().getFirst()).getChildren().getFirst()).getChildren().get(1);
+            Rectangle healthBar = (Rectangle) healthBarContainer.getChildren().get(1);
+            Label healthLabel = (Label) healthBarContainer.getChildren().get(2);
 
 
 
             updateBar(waterBar, waterLabel, selectedPlant.getWaterLevel());
             updateBar(nutrientBar, nutrientLabel, selectedPlant.getFertilizerLevel());
+            updateBar(healthBar, healthLabel, selectedPlant.getHealth());
+
         }
 
 
