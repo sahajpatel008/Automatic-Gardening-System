@@ -2,6 +2,7 @@ package com.example.gridproject;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -282,6 +283,12 @@ public class PlantGridController {
 
                     // healthbar, nutrientbar
                     updateGrid(i, j);
+                }
+                else{
+                    if(i == 0 && j == 2){
+                        System.out.println("************************************");
+                    }
+                    emptyGrid(i,j);
                 }
             }
         }
@@ -595,6 +602,7 @@ public class PlantGridController {
         int key = getKey(r,c);
 
         if(gardenHandler.hasPlant(key)){
+
             Plant selectedPlant = gardenHandler.getPlant(key);
 
             // for water
@@ -613,8 +621,6 @@ public class PlantGridController {
             Rectangle healthBar = (Rectangle) healthBarContainer.getChildren().get(1);
             Label healthLabel = (Label) healthBarContainer.getChildren().get(2);
 
-
-
             updateBar(waterBar, waterLabel, selectedPlant.getWaterLevel());
             updateBar(nutrientBar, nutrientLabel, selectedPlant.getFertilizerLevel());
             updateBar(healthBar, healthLabel, selectedPlant.getHealth());
@@ -624,6 +630,41 @@ public class PlantGridController {
 
 
     }
+
+    private void emptyGrid(int row, int col){
+        int key = getKey(row, col);
+
+        // Access the StackPane at the grid location
+        StackPane tileContainer = (StackPane) gridPane.getChildren().get(key);
+        HBox container = (HBox) tileContainer.getChildren().get(0);
+        VBox tileBox = (VBox) container.getChildren().get(0);
+
+        // ✅ Find the button by type-checking to avoid casting errors
+        for (Node node : tileBox.getChildren()) {
+            if (node instanceof Button) {
+                Button tileButton = (Button) node;
+                if (tileButton.getGraphic() instanceof ImageView) {
+                    ((ImageView) tileButton.getGraphic()).setVisible(false);
+                }
+                break; // Stop searching once the button is found
+            }
+        }
+
+        // ✅ Hide the Health Bar
+        for (Node node : tileBox.getChildren()) {
+            if (node instanceof HBox) {
+                HBox barContainer = (HBox) node;
+                barContainer.setVisible(false);
+            }
+        }
+
+        insectAttack("", row, col);
+
+        System.out.println("Cell at (" + row + ", " + col + ") hidden.");
+
+    }
+
+
 
     private void dripIrrigation(int r, int c){
         int key = getKey(r,c);
@@ -704,6 +745,7 @@ public class PlantGridController {
         }
         if (selectedPlantImage != null && plantType != null) {
             imageView.setImage(selectedPlantImage);
+            imageView.setVisible(true);
 //            gardenHandler.put(key, selectedPlantObject);
             if(plantType != null){
                 if(plantType.equals("Plant1")) gardenHandler.addPlant(key, new Plant1(key));
