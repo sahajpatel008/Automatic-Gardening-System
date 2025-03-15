@@ -225,7 +225,7 @@ public class PlantGridController {
         timeline.play();
     }
 
-    // ✅ Refresh GUI and backend data
+    // Refresh GUI and backend data
     private void refreshGUI() {
         Platform.runLater(() -> {
             try {
@@ -251,22 +251,9 @@ public class PlantGridController {
         return row*GRID_SIZE+col;
     }
 
-    // ✅ Example backend logic
+    // Example backend logic
     private void simulateBackendLogic() {
-//        for (String key : plantGridMap.keySet()) {
-//            Plant plant = plantGridMap.get(key);
-//            if (plant != null) {
-//                // Simulate plant health decay or improvement
-//                plant.setHealth(Math.max(plant.getHealth() - 1, 0));
-//                plant.setWaterLevel(Math.max(plant.getWaterLevel() - 2, 0));
-//                plant.setNutrientsLevel(Math.max(plant.getNutrientsLevel() - 1, 0));
-//
-//                String[] parts = key.split(",");
-//                int row = Integer.parseInt(parts[0]);
-//                int col = Integer.parseInt(parts[1]);
-//                updateGrid(row, col); // ✅ Update GUI after backend update
-//            }
-//        }
+
 
         for(int i = 0; i < GRID_SIZE; i++) {
             for(int j = 0; j < GRID_SIZE; j++) {
