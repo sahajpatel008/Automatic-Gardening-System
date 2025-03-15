@@ -2,6 +2,7 @@ package com.example.gridproject;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -31,53 +32,6 @@ import Handler.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
-import javafx.application.Platform;
-import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
-// Parent Plant class with health, water, and nutrients properties
-
-
-
-//class Plant {
-//    int health;
-//    int waterLevel;
-//    int nutrientsLevel;
-//
-//    public Plant() {
-//        this.health = 100;
-//        this.waterLevel = 100;
-//        this.nutrientsLevel = 100;
-//    }
-//
-//    public Plant(int h, int w, int n){
-//        this.health = h;
-//        this.waterLevel = w;
-//        this.nutrientsLevel = n;
-//    }
-//
-//    public int getHealth() { return health; }
-//    public void setHealth(int health) { this.health = health; }
-//    public int getWaterLevel() { return waterLevel; }
-//    public void setWaterLevel(int waterLevel) { this.waterLevel = waterLevel; }
-//    public int getNutrientsLevel() { return nutrientsLevel; }
-//    public void setNutrientsLevel(int nutrientsLevel) { this.nutrientsLevel = nutrientsLevel; }
-//}
-//
-//// Child classes inheriting from Plant
-//class PlantClass1 extends Plant {
-//    PlantClass1(int h, int w, int n){
-//        super(h, w, n);
-//    }
-//}
-//class PlantClass2 extends Plant {
-//    PlantClass2(int h, int w, int n){
-//        super(h, w, n);
-//    }
-//}
-//class PlantClass3 extends Plant {
-//    PlantClass3(int h, int w, int n){
-//        super(h, w, n);
-//    }
-//}
 
 class InsectViewInfo {
     ImageView insectView;
@@ -412,18 +366,20 @@ public class PlantGridController {
                 final int finalCol = col;
 
                 StackPane tileContainer = new StackPane();
-                tileContainer.setStyle("-fx-background-color: lightgray; -fx-padding: 10px; -fx-border-color: black;");
+                tileContainer.setStyle("-fx-background-color: lightgray; -fx-padding: 0px; -fx-border-width: 0;");
+                tileContainer.setPadding(new Insets(0, 0, 0, 0));
                 double boxWidth = 0.08*screenWidth;
                 tileContainer.setMinSize(0.11*screenWidth,0.11*screenWidth);
                 tileContainer.setMaxSize(0.11*screenWidth,0.11*screenWidth);
 
                 VBox tileBox = new VBox();
                 tileBox.setSpacing(2);
-                tileBox.setStyle("-fx-alignment: center;");
+                tileBox.setStyle("-fx-alignment: center; -fx-background-color: transparent");
 
                 ImageView imageView = new ImageView();
-                imageView.setFitWidth(0.25*tileContainer.getMinHeight());
-                imageView.setFitHeight(0.25*tileContainer.getMinHeight());
+//                imageView.setFitWidth(0.25*tileContainer.getMinHeight());
+//                imageView.setFitHeight(0.25*tileContainer.getMinHeight());
+
 
                 // Health Bar
                 HBox healthBarContainer = createBarContainer("GREEN", "♥:");
@@ -444,9 +400,9 @@ public class PlantGridController {
                 nutrientBarContainer.setVisible(false);
 
                 Button tileButton = new Button();
-                tileButton.setMinSize(150, 150);
-                tileButton.setMaxSize(150,150);
-                tileButton.setStyle("-fx-background-color: LIGHTBLUE;");
+                tileButton.setMinSize(105, 105);
+                tileButton.setMaxSize(105,105);
+                tileButton.setStyle("-fx-background-color: transparent;");
                 tileButton.setGraphic(imageView);
 
                 tileButton.setOnAction(event -> plantSelectedPlant(finalRow, finalCol, imageView, healthBarContainer, healthBar, healthLabel, waterBarContainer, waterBar, waterLabel, nutrientBarContainer, nutrientBar, nutrientLabel));
@@ -459,7 +415,8 @@ public class PlantGridController {
                 insectBox.setMaxWidth(50);
 
                 // Shift more towards the right using translateX
-                insectBox.setTranslateX(20); // Adjust this value if needed
+                insectBox.setTranslateX(0); // Adjust this value if needed
+                insectBox.setStyle("-fx-background-color: transparent;");
 
                 List<InsectViewInfo> insectList = new ArrayList<>();
                 for (int i = 0; i < 4; i++) {
@@ -474,10 +431,21 @@ public class PlantGridController {
                     insectBox.getChildren().add(insectView);
                 }
 
+                imageView.setFitWidth(0.7*tileButton.getMinHeight());
+                imageView.setFitHeight(0.7*tileButton.getMinHeight());
+                tileBox.setAlignment(Pos.CENTER);
+                tileButton.setAlignment(Pos.CENTER);
+
 
                 tileBox.getChildren().addAll(imageView, tileButton, healthBarContainer, waterBarContainer, nutrientBarContainer);
                 HBox container = new HBox(tileBox, insectBox);
+                container.setSpacing(5); // Remove extra spacing
+                container.setAlignment(Pos.CENTER_LEFT); // Keep both boxes aligned
+                tileBox.setAlignment(Pos.CENTER);
+                insectBox.setAlignment(Pos.CENTER);
                 tileContainer.getChildren().add(container);
+                tileContainer.setMinWidth(Region.USE_COMPUTED_SIZE);
+                tileContainer.setMaxWidth(Region.USE_PREF_SIZE);
                 gridPane.add(tileContainer, col, row);
 
                 buttons[row][col] = tileButton;
@@ -515,7 +483,7 @@ public class PlantGridController {
 
     private void updateRemovePlantButtonColor() {
         if(isRemovePlant){
-            removePlantButton.setStyle("-fx-background-color: #ff9393;");
+            removePlantButton.setStyle("-fx-background-color: transparent;");
         }
         else
             removePlantButton.setStyle("");
