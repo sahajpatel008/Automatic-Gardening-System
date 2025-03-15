@@ -89,34 +89,47 @@ public class GardenHandler {
         grid.put(coordinate,plant);
         logger.log(Level.INFO, "Added"+ plant.ID+" plant at " + coordinate +"th tile");
     }
+
     // public? for manual calling?
-    public void waterPlant(Plant plant){
+    private void waterPlant(Plant plant){
         if(plant.getSensor().needsWater()) {
             plant.getWaterSprinkler().waterPlant();
-            logger.log(Level.INFO, "Irrigation carried out at ("+ plant.getCoordinate()+")th tile");
+            logger.log(Level.INFO, "Irrigation carried out at ("+ plant.getCoordinate() +")th tile");
         }
+    }
+
+    // for manually irrigating water ((because waterPlant checks for the threshold)
+    public void manuallyWaterPlant(Plant plant){
+        plant.getWaterSprinkler().waterPlant();
+        logger.log(Level.INFO, "Irrigation carried out at ("+ plant.getCoordinate() +")th tile");
     }
 
     public void pestInfection(Plant plant, Pest pest){
         if(pest.getID().equals(plant.ID)){
             plant.setPestInfected(true);
             plant.setPest(pest);
-            logger.log(Level.INFO, "Pest infection at ("+ plant.getCoordinate()+")th tile");
+            logger.log(Level.INFO, "Pest infection at ("+ plant.getCoordinate() +")th tile");
         }
     }
 
     public void addPesticide(Plant plant, String pesticideType){
         if(plant.ID.equals(pesticideType)){
             plant.addPesticide();
-            logger.log(Level.INFO, "Anti-Pest infection at ("+ plant.getCoordinate()+")th tile");
+            logger.log(Level.INFO, "Anti-Pest infection at ("+ plant.getCoordinate() +")th tile");
         }
     }
 
-    public void addFertilizer(Plant plant){
+    private void addFertilizer(Plant plant){
         if(plant.getSensor().needsFertilizer()){
             plant.addFertilizer();
-            logger.log(Level.INFO, "Added fertilizer at ("+ plant.getCoordinate()+")th tile");
+            logger.log(Level.INFO, "Added fertilizer at ("+ plant.getCoordinate() +")th tile");
         }
+    }
+
+    // for manually adding fertilizer (because addFertilizer checks for the threshold)
+    public void manuallyAddFertilizer(Plant plant){
+        plant.addFertilizer();
+        logger.log(Level.INFO, "Added fertilizer at ("+ plant.getCoordinate() +")th tile");
     }
 
     // Automatic Functions
@@ -208,7 +221,7 @@ public class GardenHandler {
         for(Plant plant: grid.values()){
             if(plant.getHealth() <= 0) {
                 removePlant(plant.getCoordinate());
-                logger.log(Level.INFO, "Dead plant at ("+ plant.getCoordinate()+")");
+                logger.log(Level.INFO, "Dead plant at ("+ plant.getCoordinate() +")");
             }
         }
     }
@@ -240,6 +253,7 @@ public class GardenHandler {
         count++;
         count%=15;
     }
+
     public HashMap<Integer, Plant> getGrid() {
         return grid;
     }

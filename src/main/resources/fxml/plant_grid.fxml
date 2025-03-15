@@ -47,6 +47,13 @@
                     <ImageView fitWidth="50" fitHeight="50" fx:id="manure"/>
                 </graphic>
             </Button>
+
+            <Label text="Remove Plant"/>
+            <Button fx:id="removePlantButton" text="Remove Plant">
+                <graphic>
+                    <ImageView fitWidth="50" fitHeight="50" fx:id="removePlantImage"/>
+                </graphic>
+            </Button>
         </VBox>
     </left>
 

@@ -32,6 +32,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
 import javafx.application.Platform;
+import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 // Parent Plant class with health, water, and nutrients properties
 
 
@@ -123,6 +124,10 @@ public class PlantGridController {
     private ComboBox<String> pesticideComboBox;
     @FXML
     private TextArea logTextArea;
+    @FXML
+    private Button removePlantButton;
+    @FXML
+    private ImageView removePlantImage;
 
     // Added Weather, Temp, and Day
     @FXML
@@ -154,6 +159,7 @@ public class PlantGridController {
     private boolean selectedWater = false;
     private boolean selectedFertilizer = false;
     private boolean isAutoPilot = false;
+    private boolean isRemovePlant = false;
 
     public void initialize() {
         setupWeatherPanel();
@@ -164,12 +170,14 @@ public class PlantGridController {
         waterTrigger();
         fertilizerTrigger();
         createAutoPilotButton();
+        removeTrigger();
 
         loadImage(plantImage1, "images/plant.jpg");
         loadImage(plantImage2, "images/plant2.jpg");
         loadImage(plantImage3, "images/plant3.jpg");
         loadImage(waterDrop, "images/waterdrop.jpg");
         loadImage(manure, "images/fertilizer.png");
+        loadImage(removePlantImage, "images/remove.jpg");
         runFor24Hours();
 
 //        pesticideImages[0] = "images/pesticide.png";
@@ -236,6 +244,10 @@ public class PlantGridController {
                 logger.log(Level.SEVERE, "Error during refresh: " + e.getMessage());
             }
         });
+    }
+
+    private int getKey(int row, int col){
+        return row*GRID_SIZE+col;
     }
 
     // ✅ Example backend logic
@@ -318,17 +330,28 @@ public class PlantGridController {
     private void createAutoPilotButton() {
         Button autoPilotButton = new Button("AutoPilot");
         autoPilotButton.setMinSize(120, 40);
-        autoPilotButton.setStyle("-fx-background-color: GREEN; -fx-text-fill: white; -fx-font-size: 14px;");
+        autoPilotButton.setStyle("-fx-text-fill: black; -fx-font-size: 14px;  -fx-border-color: black");
 
-        autoPilotButton.setOnAction(event -> startAutoPilot());
+        autoPilotButton.setOnAction(event -> {
+            startAutoPilot();
+            updateAutoPilotButtonColor(autoPilotButton);
+        });
 
         VBox parent = (VBox) fertilizerButton.getParent();
         parent.getChildren().add(autoPilotButton);
     }
 
+    private void updateAutoPilotButtonColor(Button button) {
+        if (isAutoPilot) {
+            button.setStyle("-fx-background-color: GREEN; -fx-text-fill: white; -fx-font-size: 14px;");
+        } else {
+            button.setStyle("-fx-text-fill: black; -fx-font-size: 14px; -fx-border-color: black");
+        }
+    }
+
     private void startAutoPilot() {
         this.isAutoPilot = !this.isAutoPilot;
-        System.out.println("Autopilot status: "+isAutoPilot);
+        logger.log(Level.INFO, "AutoPilot status: "+isAutoPilot);
     }
 
     public void printGridDetails() {
@@ -393,9 +416,6 @@ public class PlantGridController {
         logger.setLevel(Level.ALL);
     }
 
-    private void updateLog(String message) {
-        logTextArea.appendText(message + "\n");
-    }
 
     private void setupGrid() {
         for (int row = 0; row < GRID_SIZE; row++) {
@@ -485,13 +505,66 @@ public class PlantGridController {
         sprayPesticide(row, col);
         fertilise(row, col);
         dripIrrigation(row, col);
+        removePlant(row, col);
+    }
+
+    private void removePlant(int row, int col) {
+        int key = getKey(row, col);
+        if(isRemovePlant && gardenHandler.hasPlant(key)){
+            gardenHandler.removePlant(key);
+            isRemovePlant = false;
+            updateRemovePlantButtonColor();
+        }
+    }
+
+    private void removeTrigger(){
+        removePlantButton.setOnMouseClicked(event -> {
+            isRemovePlant = !isRemovePlant;
+            updateRemovePlantButtonColor();
+            logger.log(Level.INFO, "Remove Plant: " + isRemovePlant);
+        });
+    }
+
+    private void updateRemovePlantButtonColor() {
+        if(isRemovePlant){
+            removePlantButton.setStyle("-fx-background-color: #ff9393;");
+        }
+        else
+            removePlantButton.setStyle("");
     }
 
     // Setup plant selection buttons
     private void setupPlantSelection() {
-        plantType1.setOnAction(event -> selectPlant("/images/plant.jpg", "Plant1"));
-        plantType2.setOnAction(event -> selectPlant("/images/plant2.jpg", "Plant2"));
-        plantType3.setOnAction(event -> selectPlant("/images/plant3.jpg", "Plant3"));
+        plantType1.setOnAction(event -> {
+            selectPlant("/images/plant.jpg", "Plant1");
+            updatePlantButtonColor();
+        });
+        plantType2.setOnAction(event -> {
+            selectPlant("/images/plant2.jpg", "Plant2");
+            updatePlantButtonColor();
+        });
+        plantType3.setOnAction(event -> {
+            selectPlant("/images/plant3.jpg", "Plant3");
+            updatePlantButtonColor();
+        });
+    }
+
+    private void updatePlantButtonColor() {
+        if(plantType.equals("Plant1")) {
+            plantType1.setStyle("-fx-background-color: #f4f2a1;");
+            plantType2.setStyle("");
+            plantType3.setStyle("");
+        }
+        else if(plantType.equals("Plant2")) {
+            plantType2.setStyle("-fx-background-color: #f4f2a1;");
+            plantType3.setStyle("");
+            plantType1.setStyle("");
+        }
+        else if(plantType.equals("Plant3")) {
+            plantType3.setStyle("-fx-background-color: #f4f2a1;");
+            plantType2.setStyle("");
+            plantType1.setStyle("");
+        }
     }
 
     private void setupPesticideSelection() {
@@ -528,74 +601,60 @@ public class PlantGridController {
         if(selectedPesticide!=null && gardenHandler.hasPlant(key)){
             gardenHandler.addPesticide(gardenHandler.getPlant(key), selectedPesticide);
             updateGrid(r, c);
-
         }
-
-//        List<InsectViewInfo> insectViews = insectGridMap.get(key);
-//
-//        if(selectedPesticide == null){
-//            return;
-//        }
-//        if (insectViews != null) {
-//            for (InsectViewInfo insectViewInfo : insectViews) {
-//                // Assuming InsectViewInfo has an ImageView object and an insectType
-//                ImageView insectView = insectViewInfo.getInsectView(); // Get the ImageView object
-//                String insectType = insectViewInfo.getInsectType(); // Get the insect type (if needed)
-//
-//                // Hide the insect by setting the ImageView's visibility to false
-//                if(selectedPesticide.equals(insectType)) {
-//                    // here, add backend object
-//                    insectView.setVisible(false);
-//                }
-//
-//                // Log the pesticide spray action
-//                logger.log(Level.INFO, "Sprayed pesticide on "+ insectType+" at ("+ (r+1) +"," + (c+1) + ")");
-//            }
-//        } else {
-//            logger.info("No insects to spray at (" + (r+1) + "," + (c+1) + ")");
-//        }
     }
 
     private void fertilizerTrigger(){
         fertilizerButton.setOnMouseClicked(event -> {
             selectedFertilizer = !selectedFertilizer;
+            updateFertilizerButtonColor(fertilizerButton);
             logger.log(Level.INFO, "Fertilizer Nozzle: " + selectedFertilizer);
         });
     }
 
-    private int getKey(int row, int col){
-        return row*GRID_SIZE+col;
+    private void updateFertilizerButtonColor(Button button){
+        if(selectedFertilizer){
+            button.setStyle("-fx-background-color: #a5992a;; -fx-text-fill: black; -fx-font-size: 14px;");
+        }
+        else{
+            button.setStyle("");
+        }
     }
 
     private void fertilise(int r, int c){
         int key = getKey(r,c);
 
         if(selectedFertilizer && gardenHandler.hasPlant(key)){
-            gardenHandler.addFertilizer(gardenHandler.getPlant(key));
+            gardenHandler.manuallyAddFertilizer(gardenHandler.getPlant(key));
             updateGrid(r, c);
         }
-
-//        Plant selectedPlant = plantGridMap.get(key);
-//
-//        if(selectedFertilizer) {
-//            if (selectedPlant == null) {
-//                logger.log(Level.INFO, "No plant at (" + (r+1) + "," + (c+1) + ")");
-//            } else {
-//                // update backend here
-//                selectedPlant.setNutrientLevel(100); // Set nutrient level to 100
-//
-//                logger.log(Level.INFO, "Fertilizer applied at (" + (r + 1) + "," + (c + 1) + ")");
-//
-//                updateGrid(r, c);
-//            }
-//        }
     }
 
     private void waterTrigger(){
         waterButton.setOnMouseClicked(event -> {
             selectedWater = !selectedWater;
+            updateWaterTriggerColor(waterButton);
             logger.log(Level.INFO, "Water Nozzle: " + selectedWater);
         });
+    }
+
+    private void updateWaterTriggerColor(Button button){
+        if(selectedWater){
+            button.setStyle("-fx-background-color: LIGHTBLUE; -fx-text-fill: black; -fx-font-size: 14px;");
+        }
+        else{
+            button.setStyle("");
+        }
+    }
+
+    private void dripIrrigation(int r, int c){
+        int key = getKey(r,c);
+
+        if(selectedWater && gardenHandler.hasPlant(key)){
+            System.out.println("Drip Irrigation.........................................................................................................................");
+            gardenHandler.manuallyWaterPlant(gardenHandler.getPlant(key));
+            updateGrid(r, c);
+        }
     }
 
     private void updateGrid(int r, int c){
@@ -624,7 +683,6 @@ public class PlantGridController {
             updateBar(waterBar, waterLabel, selectedPlant.getWaterLevel());
             updateBar(nutrientBar, nutrientLabel, selectedPlant.getFertilizerLevel());
             updateBar(healthBar, healthLabel, selectedPlant.getHealth());
-
         }
 
 
@@ -662,31 +720,6 @@ public class PlantGridController {
 
         System.out.println("Cell at (" + row + ", " + col + ") hidden.");
 
-    }
-
-
-
-    private void dripIrrigation(int r, int c){
-        int key = getKey(r,c);
-
-        if(selectedWater && gardenHandler.hasPlant(key)){
-            gardenHandler.waterPlant(gardenHandler.getPlant(key));
-            updateGrid(r, c);
-        }
-
-//        Plant selectedPlant = gardenHandler.getPlant(key);
-//
-//        if(selectedWater) {
-//            if (!gardenHandler.hasPlant(key)) {
-//                logger.log(Level.INFO, "No plant at (" + (r+1) + "," + (c+1) + ")");
-//            } else {
-//                selectedPlant.setWaterLevel(100);
-//                selectedPlant.displayStatus();
-//                plantGridMap.put(key, selectedPlant);
-//                logger.log(Level.INFO, "Irrigation carried out at (" + (r+1) + "," + (c+1) +")");
-//                updateGrid(r, c);
-//            }
-//        }
     }
 
     private HBox createBarContainer(String color, String emoji) {
