@@ -444,7 +444,8 @@ public class PlantGridController {
                 nutrientBarContainer.setVisible(false);
 
                 Button tileButton = new Button();
-                tileButton.setMinSize(100, 100);
+                tileButton.setMinSize(150, 150);
+                tileButton.setMaxSize(150,150);
                 tileButton.setStyle("-fx-background-color: LIGHTBLUE;");
                 tileButton.setGraphic(imageView);
 
