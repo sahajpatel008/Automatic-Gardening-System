@@ -20,52 +20,52 @@ public class GardenHandler {
     private TextArea logTextArea;
 
     // Constructor
-    public GardenHandler(TextArea logTextArea) {
+    public GardenHandler(TextArea logTextArea, Logger logger) {
         grid = new HashMap<>();
         count = 0;
-        logger = Logger.getLogger("GardenLogs");
+        this.logger = logger;
         this.logTextArea = logTextArea;
     }
 
     // Setup Logger
 
-    private void setupLogger() {
-        Logger rootLogger = Logger.getLogger("");
-        Handler[] handlers = rootLogger.getHandlers();
-        for (Handler handler : handlers) {
-            rootLogger.removeHandler(handler); // Remove default console handler
-        }
-
-        Handler textAreaHandler = new Handler() {
-            @Override
-            public void publish(LogRecord record) {
-                Platform.runLater(() -> {
-                    String message = record.getLevel() + ": " + record.getMessage() + "\n";
-                    Text text = new Text(message);
-
-                    if (record.getLevel().equals(Level.SEVERE)) {
-                        text.setStyle("-fx-fill: red; -fx-font-weight: bold;");
-                    } else {
-                        text.setStyle("-fx-fill: black;");
-                    }
-
-                    logTextArea.appendText(text.getText());
-                });
-            }
-
-            @Override
-            public void flush() {
-            }
-
-            @Override
-            public void close() throws SecurityException {
-            }
-        };
-
-        textAreaHandler.setLevel(Level.ALL);
-        rootLogger.addHandler(textAreaHandler);
-        logger.setLevel(Level.ALL);
-    }
+//    private void setupLogger() {
+//        Logger rootLogger = Logger.getLogger("");
+//        Handler[] handlers = rootLogger.getHandlers();
+//        for (Handler handler : handlers) {
+//            rootLogger.removeHandler(handler); // Remove default console handler
+//        }
+//
+//        Handler textAreaHandler = new Handler() {
+//            @Override
+//            public void publish(LogRecord record) {
+//                Platform.runLater(() -> {
+//                    String message = record.getLevel() + ": " + record.getMessage() + "\n";
+//                    Text text = new Text(message);
+//
+//                    if (record.getLevel().equals(Level.SEVERE)) {
+//                        text.setStyle("-fx-fill: red; -fx-font-weight: bold;");
+//                    } else {
+//                        text.setStyle("-fx-fill: black;");
+//                    }
+//
+//                    logTextArea.appendText(text.getText());
+//                });
+//            }
+//
+//            @Override
+//            public void flush() {
+//            }
+//
+//            @Override
+//            public void close() throws SecurityException {
+//            }
+//        };
+//
+//        textAreaHandler.setLevel(Level.ALL);
+//        rootLogger.addHandler(textAreaHandler);
+//        logger.setLevel(Level.ALL);
+//    }
 
     // Weather Functions
 

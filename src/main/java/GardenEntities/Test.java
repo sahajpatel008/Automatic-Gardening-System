@@ -12,7 +12,7 @@ public class Test {
     private static GardenHandler handler;
 
     public static void main(String[] args) {
-        handler = new GardenHandler(new TextArea());
+        handler = new GardenHandler(new TextArea(), null);
         handler.addPlant(0,new Plant1(0));
         runFor24Hours();
     }

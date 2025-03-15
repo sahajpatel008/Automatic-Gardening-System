@@ -151,12 +151,12 @@ public class PlantGridController {
 //    private Plant selectedPlantObject = null;
     private String plantType = null;
 //    private final Map<String, Plant> plantGridMap = new HashMap<>();
-    GardenHandler gardenHandler = new GardenHandler(logTextArea);
+    GardenHandler gardenHandler = new GardenHandler(logTextArea, logger);
     private HashMap<Integer, Plant> plantGridMap = gardenHandler.getGrid();
 //    private HashMap<Integer, List<InsectViewInfo>> insectGridMap = new HashMap<>();
     private String selectedPesticide = "";
-    private final String[] pesticideImages = new String[4];
     private boolean selectedWater = false;
+    private final String[] pesticideImages = new String[4];
     private boolean selectedFertilizer = false;
     private boolean isAutoPilot = false;
     private boolean isRemovePlant = false;
@@ -484,7 +484,6 @@ public class PlantGridController {
 
             }
         }
-//        insectAttack("pest1", 0, 2);
 
         updateWeather("Sunny🌞", 70, 28);
     }
@@ -639,7 +638,6 @@ public class PlantGridController {
         int key = getKey(r,c);
 
         if(selectedWater && gardenHandler.hasPlant(key)){
-            System.out.println("Drip Irrigation.........................................................................................................................");
             gardenHandler.manuallyWaterPlant(gardenHandler.getPlant(key));
             updateGrid(r, c);
         }
@@ -832,33 +830,6 @@ public class PlantGridController {
             }
         }
 
-        return;
-
-
-//        if(gardenHandler.hasPlant(key)) {
-//            if (insectList != null) {
-//                for (InsectViewInfo insectInfo : insectList) {
-//                    if (insectInfo.getInsectView().getImage() == null) {
-//                        URL imageUrl = getClass().getResource("/images/" + insectType + ".png");
-//                        if (imageUrl != null) {
-//                            insectInfo.getInsectView().setImage(new Image(imageUrl.toExternalForm()));
-//                            insectInfo.getInsectView().setVisible(true);
-//                            insectInfo.setInsectType(insectType); // Set the insect type
-//
-//                            logger.log(Level.WARNING, "WARNING: Insect attack: " + insectType + " at (" + (row+1) + "," + (col+1) +")");
-//                            return;
-//                        } else {
-//                            logger.warning("Error: Insect image not found: " + insectType);
-//                        }
-//                    }
-//                }
-//                logger.info("No available slot for insect at (" + (row+1) + "," + (col+1) +")");
-//            }
-//            else
-//                logger.log(Level.INFO,"No insect at (" + (row+1) + "," + (col+1) +")");
-//        }
-//        else
-//            logger.log(Level.INFO,"No Plant at (" + (row+1) + "," + (col+1) +")");
     }
 
 }
