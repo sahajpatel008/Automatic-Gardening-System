@@ -160,6 +160,7 @@ public class PlantGridController {
     private boolean selectedFertilizer = false;
     private boolean isAutoPilot = false;
     private boolean isRemovePlant = false;
+    private String currentWeather;
 
 
     public void initialize() {
@@ -298,22 +299,56 @@ public class PlantGridController {
         HBox weatherPanel = new HBox();
         weatherPanel.setSpacing(20);
         weatherPanel.setAlignment(Pos.CENTER);
-        weatherPanel.setStyle("-fx-background-color: lightblue; -fx-padding: 10px;");
+        weatherPanel.setStyle("-fx-background-color: transparent; -fx-padding: 10px;");
+
+
+        // StackPane to overlay text on image
+        StackPane stackPane = new StackPane();
+        ImageView weatherGif = null;
+        // Load the GIF
+        String curr = "Rainy";
+        if(Objects.equals(curr, "Rainy")) {
+
+            weatherGif = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/clear1.gif"))));
+
+//            weatherGif.setPreserveRatio(true); // Stretch to fit panel
+        }
+
+
+        // VBox to organize labels
+        VBox textContainer = new VBox();
+        textContainer.setAlignment(Pos.CENTER);
+        textContainer.setSpacing(5); // Adjust spacing between labels
 
         weatherLabel = new Label("Weather: Clear");
         tempLabel = new Label("Temp: 59°F");
         dayLabel = new Label("Day: 1");
 
-        weatherLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: black;");
-        tempLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: black;");
-        dayLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: black;");
+        // Styling labels to stand out
+        String labelStyle = "-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold; "
+                + "-fx-effect: dropshadow( gaussian , black , 5 , 0 , 0 , 0 );";
 
-        weatherPanel.getChildren().addAll(weatherLabel, tempLabel, dayLabel);
+        weatherLabel.setStyle(labelStyle);
+        tempLabel.setStyle(labelStyle);
+        dayLabel.setStyle(labelStyle);
+
+        // Add labels inside VBox
+        textContainer.getChildren().addAll(weatherLabel, tempLabel, dayLabel);
+
+        // StackPane holds the image in the background and text on top
+        if(weatherGif!=null)
+            stackPane.getChildren().addAll(weatherGif, textContainer);
+        else
+            stackPane.getChildren().add(textContainer);
+
+        // Add StackPane to HBox
+        weatherPanel.getChildren().add(stackPane);
 
         // Add panel at the top of the existing layout
         BorderPane root = (BorderPane) gridPane.getParent();
         root.setTop(weatherPanel);
     }
+
 
     private void createAutoPilotButton() {
         Button autoPilotButton = new Button("AutoPilot");
@@ -361,6 +396,7 @@ public class PlantGridController {
     }
 
     private void updateWeather(String weather, int temperature, int day) {
+        currentWeather = weather;
         weatherLabel.setText("Weather: " + weather);
         tempLabel.setText("Temp: " + temperature + "°F");
         dayLabel.setText("Day: " + day);
