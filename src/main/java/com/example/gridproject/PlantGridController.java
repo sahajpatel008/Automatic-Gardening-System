@@ -161,6 +161,7 @@ public class PlantGridController {
     private boolean isAutoPilot = false;
     private boolean isRemovePlant = false;
 
+
     public void initialize() {
         setupWeatherPanel();
         setupGrid();
@@ -772,7 +773,6 @@ public class PlantGridController {
 
     private void plantSelectedPlant(int row, int col, ImageView imageView, HBox healthBarContainer, Rectangle healthBar, Label healthLabel, HBox waterBarContainer, Rectangle waterBar, Label waterLabel, HBox nutrientBarContainer, Rectangle nutrientBar, Label nutrientLabel) {
         int key = getKey(row,col);
-
         if(plantGridMap.get(key) != null){
             return;
         }
