@@ -17,6 +17,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.application.Platform;
 import javafx.scene.text.Text;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -33,6 +34,9 @@ import Handler.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 
 class InsectViewInfo {
@@ -117,7 +121,7 @@ public class PlantGridController {
 
 
 
-    private static final Logger logger = Logger.getLogger(PlantGridController.class.getName());
+    private static Logger logger = Logger.getLogger(PlantGridController.class.getName());
     private final int GRID_SIZE = 4;
     private final Button[][] buttons = new Button[GRID_SIZE][GRID_SIZE];
     private Image selectedPlantImage = null;
@@ -149,7 +153,7 @@ public class PlantGridController {
             currentWeatherGif.setImage(gifClear);
         } else {
             System.err.println("⚠ currentWeatherGif is null — check your FXML binding.");
-        }
+        }      // the following statement is used to log any messages
 
 
         setupWeatherPanel();
@@ -408,10 +412,31 @@ public class PlantGridController {
     private void setupLogger() {
         Logger rootLogger = Logger.getLogger("");
         Handler[] handlers = rootLogger.getHandlers();
+
+        // Remove existing handlers (including default console handler)
         for (Handler handler : handlers) {
-            rootLogger.removeHandler(handler); // Remove default console handler
+            rootLogger.removeHandler(handler);
         }
 
+        // FileHandler to write logs to a file
+        try {
+            // Create system-independent path to resources/logs/LOG.log
+            Path logDirectory = Paths.get("src", "main", "resources", "logs");
+            if (!Files.exists(logDirectory)) {
+                Files.createDirectories(logDirectory);
+            }
+
+            Path logFilePath = logDirectory.resolve("LOG.log");
+            FileHandler fileHandler = new FileHandler(logFilePath.toString(), true); // true = append mode
+            fileHandler.setLevel(Level.CONFIG);
+            fileHandler.setFormatter(new SimpleFormatter()); // Use a simple format
+
+            rootLogger.addHandler(fileHandler);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // TextAreaHandler to display logs in the UI
         Handler textAreaHandler = new Handler() {
             @Override
             public void publish(LogRecord record) {
@@ -430,17 +455,19 @@ public class PlantGridController {
             }
 
             @Override
-            public void flush() {
-            }
+            public void flush() {}
 
             @Override
-            public void close() throws SecurityException {
-            }
+            public void close() throws SecurityException {}
         };
 
-        textAreaHandler.setLevel(Level.ALL);
+        textAreaHandler.setLevel(Level.CONFIG);
         rootLogger.addHandler(textAreaHandler);
-        logger.setLevel(Level.ALL);
+
+        // Set logger level to capture all messages
+        rootLogger.setLevel(Level.CONFIG);
+
+        logger.log(Level.INFO, "Logger setup. Program started... "+logger);
     }
 
 
@@ -630,7 +657,6 @@ public class PlantGridController {
         if (imageUrl == null) {
             System.err.println("Image not found in selectPlant: " + imagePath);
             logger.log(Level.SEVERE, "Error: Couldn't retrieve image for selected plant: {0}", imagePath);
-
 //            updateLog("Image not found in selectPlant: " + imagePath);
         } else {
             selectedPlantImage = new Image(imageUrl.toExternalForm());
