@@ -88,6 +88,8 @@ public class PlantGridController {
     private HBox weatherPanel;
     @FXML
     private ImageView currentWeatherGif;
+    @FXML
+    private Button autoPilotButton;
 
     // Added Weather, Temp, and Day
     @FXML
@@ -96,6 +98,9 @@ public class PlantGridController {
     private Label tempLabel;
     @FXML
     private Label dayLabel;
+    @FXML
+    private ScrollPane gridScrollPane;   // For grid
+
 
     private Timeline timeline;
 
@@ -108,7 +113,7 @@ public class PlantGridController {
 
     private static Logger logger = Logger.getLogger(PlantGridController.class.getName());
     private static final int LOG_EVENT_MAX_CHAR = 1000;
-    private final int GRID_SIZE = 4;
+    private final int GRID_SIZE = 8;
     private final Button[][] buttons = new Button[GRID_SIZE][GRID_SIZE];
     private Image selectedPlantImage = null;
     private String plantType = null;
@@ -154,6 +159,10 @@ public class PlantGridController {
         loadImage(manure, "images/fertilizer.png");
         loadImage(removePlantImage, "images/remove.jpg");
 
+        // Wrap the grid in a ScrollPane
+        gridScrollPane.setContent(gridPane);
+        gridScrollPane.setFitToWidth(true);
+        gridScrollPane.setFitToHeight(true);
         setWeatherGifWidth();
         runFor24Hours();
         setupLogger();
@@ -266,7 +275,7 @@ public class PlantGridController {
     }
 
     private void createAutoPilotButton() {
-        Button autoPilotButton = new Button("AutoPilot");
+        autoPilotButton = new Button("AutoPilot");
         autoPilotButton.setMinSize(120, 40);
         autoPilotButton.setStyle("-fx-text-fill: black; -fx-font-size: 14px;  -fx-border-color: black");
 
@@ -318,7 +327,7 @@ public class PlantGridController {
     private void setupWeatherPanel() {
         weatherPanel.setSpacing(20);
         weatherPanel.setAlignment(Pos.CENTER);
-        weatherPanel.setStyle("-fx-background-color: transparent; -fx-padding: 10px;");
+        weatherPanel.setStyle("-fx-background-color: transparent; -fx-padding: 0px;");
 
         // Styling labels to stand out
         String labelStyle = "-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold; "

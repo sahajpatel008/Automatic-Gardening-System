@@ -8,10 +8,6 @@
     <top>
         <HBox fx:id="weatherPanel" spacing="20" alignment="CENTER" style="-fx-background-color: transparent; -fx-padding: 10px;">
             <StackPane>
-<!--                <ImageView fx:id="weatherGifSunny"/>-->
-<!--                <ImageView fx:id="weatherGifRainy"/>-->
-<!--                <ImageView fx:id="weatherGifCloudy"/>-->
-<!--                <ImageView fx:id="weatherGifClear"/>-->
                 <ImageView fx:id="currentWeatherGif" fitWidth="2500" fitHeight="120"/>
                 <VBox alignment="CENTER">
                     <Label fx:id="weatherLabel" text="Weather: Clear" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
@@ -23,6 +19,7 @@
     </top>
     <!-- Sidebar on the left -->
     <left>
+        <ScrollPane fitToWidth="true" fitToHeight="true">
         <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #D2B48C;" alignment="CENTER" maxHeight="Infinity">
             <Label text="Select a Plant" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
 
@@ -47,39 +44,39 @@
             <Label text="Select Pesticide"/>
             <ComboBox fx:id="pesticideComboBox" prefWidth="150"/>
 
-
-
-            <Label text="Water"/>
             <Button fx:id="waterButton" text="Water">
                 <graphic>
                     <ImageView fitWidth="50" fitHeight="50" fx:id="waterDrop"/>
                 </graphic>
             </Button>
 
-            <Label text="Fertilizer"/>
+
             <Button fx:id="fertilizerButton" text="Fertilizer">
                 <graphic>
                     <ImageView fitWidth="50" fitHeight="50" fx:id="manure"/>
                 </graphic>
             </Button>
 
-            <Label text="Remove Plant"/>
             <Button fx:id="removePlantButton" text="Remove Plant">
                 <graphic>
                     <ImageView fitWidth="50" fitHeight="50" fx:id="removePlantImage"/>
                 </graphic>
             </Button>
         </VBox>
+        </ScrollPane>
     </left>
 
     <center>
+        <ScrollPane fx:id="gridScrollPane" fitToWidth="true" fitToHeight="true" pannable="true">
         <HBox alignment="CENTER" style="-fx-background-color: #D2B48C">
             <Separator orientation="VERTICAL" style="-fx-padding: 0; -fx-border-width:1px; -fx-border-color: black;" />
 
             <Region HBox.hgrow="ALWAYS"/>
             <GridPane fx:id="gridPane" hgap="5" vgap="5" alignment="CENTER" style="-fx-border-width: 0; -fx-background-color: #D2B48C;"/>
             <Region HBox.hgrow="ALWAYS"/>
+
         </HBox>
+        </ScrollPane>
         <!-- Vertical separator between grid and event log -->
 
     </center>
