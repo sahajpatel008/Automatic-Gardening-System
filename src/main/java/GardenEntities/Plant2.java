@@ -6,6 +6,4 @@ public class Plant2 extends Plant{
     public Plant2(int coordinate) {
         super(coordinate, "Plant2");
     }
-
-
 }

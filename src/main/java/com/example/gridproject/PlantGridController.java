@@ -69,10 +69,6 @@ public class PlantGridController {
     @FXML
     private ImageView plantImage1, plantImage2, plantImage3;
     @FXML
-    private Button pesticideType1, pesticideType2, pesticideType3, pesticideType4;
-    @FXML
-    private ImageView pesticideImage1, pesticideImage2, pesticideImage3, pesticideImage4;
-    @FXML
     private Button waterButton;
     @FXML
     private ImageView waterDrop;
@@ -90,14 +86,6 @@ public class PlantGridController {
     private ImageView removePlantImage;
     @FXML
     private HBox weatherPanel;
-    @FXML
-    private ImageView weatherGifSunny;
-    @FXML
-    private ImageView weatherGifRainy;
-    @FXML
-    private ImageView weatherGifCloudy;
-    @FXML
-    private ImageView weatherGifClear;
     @FXML
     private ImageView currentWeatherGif;
 
@@ -118,15 +106,13 @@ public class PlantGridController {
     @FXML
     final int screenHeight = (int) screenSize.getHeight();
 
-
-
     private static Logger logger = Logger.getLogger(PlantGridController.class.getName());
     private static final int LOG_EVENT_MAX_CHAR = 1000;
     private final int GRID_SIZE = 4;
     private final Button[][] buttons = new Button[GRID_SIZE][GRID_SIZE];
     private Image selectedPlantImage = null;
     private String plantType = null;
-    GardenHandler gardenHandler = new GardenHandler(logTextArea, logger);
+    private GardenHandler gardenHandler = new GardenHandler(logger);
     private HashMap<Integer, Plant> plantGridMap = gardenHandler.getGrid();
     private String selectedPesticide = "";
     private boolean selectedWater = false;
@@ -136,7 +122,6 @@ public class PlantGridController {
     private String currentWeather = "Rainy";
     private Image gifSunny, gifRainy, gifCloudy, gifClear;
     private ScheduledExecutorService scheduler;
-
 
     public void initialize() {
         gifSunny = new Image(Objects.requireNonNull(getClass().getResource("/images/sunImage.png")).toExternalForm(), true);
@@ -173,6 +158,10 @@ public class PlantGridController {
         runFor24Hours();
         setupLogger();
         startRefreshTimer();
+    }
+
+    private int getKey(int row, int col){
+        return row*GRID_SIZE+col;
     }
 
     public void onClose() {
@@ -239,11 +228,6 @@ public class PlantGridController {
         });
     }
 
-
-    private int getKey(int row, int col){
-        return row*GRID_SIZE+col;
-    }
-
     // Example backend logic
     private void simulateBackendLogic() {
         try {
@@ -280,26 +264,6 @@ public class PlantGridController {
             logger.log(Level.SEVERE, "simulateBackendLogic failed: " + e.getMessage(), e);
         }
     }
-
-    private void setWeatherGifWidth(){
-        currentWeatherGif.setFitWidth(0.98*screenWidth);
-    }
-
-
-    private void setupWeatherPanel() {
-        weatherPanel.setSpacing(20);
-        weatherPanel.setAlignment(Pos.CENTER);
-        weatherPanel.setStyle("-fx-background-color: transparent; -fx-padding: 10px;");
-
-        // Styling labels to stand out
-        String labelStyle = "-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold; "
-                + "-fx-effect: dropshadow( gaussian , black , 5 , 0 , 0 , 0 );";
-
-        weatherLabel.setStyle(labelStyle);
-        tempLabel.setStyle(labelStyle);
-        dayLabel.setStyle(labelStyle);
-    }
-
 
     private void createAutoPilotButton() {
         Button autoPilotButton = new Button("AutoPilot");
@@ -344,6 +308,25 @@ public class PlantGridController {
                 }
             }
         }
+    }
+
+    private void setWeatherGifWidth(){
+        currentWeatherGif.setFitWidth(0.98*screenWidth);
+    }
+
+
+    private void setupWeatherPanel() {
+        weatherPanel.setSpacing(20);
+        weatherPanel.setAlignment(Pos.CENTER);
+        weatherPanel.setStyle("-fx-background-color: transparent; -fx-padding: 10px;");
+
+        // Styling labels to stand out
+        String labelStyle = "-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold; "
+                + "-fx-effect: dropshadow( gaussian , black , 5 , 0 , 0 , 0 );";
+
+        weatherLabel.setStyle(labelStyle);
+        tempLabel.setStyle(labelStyle);
+        dayLabel.setStyle(labelStyle);
     }
 
     private void updateWeather(String weather, int temperature, int day) {
@@ -514,7 +497,6 @@ public class PlantGridController {
 
             }
         }
-
         updateWeather("Sunny🌞", 70, 28);
     }
 

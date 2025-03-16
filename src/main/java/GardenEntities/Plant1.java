@@ -7,9 +7,4 @@ public class Plant1 extends Plant{
 
         super(coordinate,"Plant1");
     }
-
-
-
-
-
 }

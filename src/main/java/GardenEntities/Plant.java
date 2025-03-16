@@ -14,8 +14,6 @@ public class Plant {
     private int coordinate;
     public final String ID;
 
-
-
     public Plant(int coordinate, String ID) {
         this.waterLevel = 100;
         this.isPestInfected = false;
@@ -27,8 +25,6 @@ public class Plant {
         this.sensor = new Sensor(this);
         this.ID = ID;
     }
-
-
 
     // Functionalities
     public void displayStatus() {
@@ -43,7 +39,6 @@ public class Plant {
         this.waterLevel = 100;
     }
 
-
     public void addPesticide(){
         this.isPestInfected = false;
         pest.destroyPest();
@@ -54,35 +49,27 @@ public class Plant {
     }
 
     // Getters
-
-
     public int getHealth() { return health; }
     public int getCoordinate() {
         return coordinate;
     }
-
     public int getWaterLevel() {
         return waterLevel;
     }
-
     public boolean isPestInfected() {
         return isPestInfected;
     }
-
     public int getFertilizerLevel() {
         return fertilizerLevel;
     }
     public Instant getTimeCreated() {
         return timeCreated;
     }
-
     public Pest getPest() {
         return pest;
     }
 
-
     // Setters
-
     public void setCoordinate(int coordinate) { this.coordinate = coordinate; }
     public void setHealth(int health) { this.health = health; }
     public void setPestInfected(boolean pestInfected) {
@@ -100,7 +87,6 @@ public class Plant {
     public void setWaterLevel(int waterLevel) {
         this.waterLevel = waterLevel;
     }
-
     public void setFertilizerLevel(int fertilizerLevel) {
         this.fertilizerLevel = fertilizerLevel;
     }
