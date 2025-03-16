@@ -212,7 +212,7 @@ public class PlantGridController {
             }
         };
 
-        scheduler.scheduleAtFixedRate(taskWrapper, 0, 1, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(taskWrapper, 0, 5, TimeUnit.SECONDS);
 
         // Schedule shutdown after 24 hours
         scheduler.schedule(() -> {
@@ -222,7 +222,7 @@ public class PlantGridController {
     }
 
     private void startRefreshTimer(){
-        timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> refreshGUI()));
+        timeline = new Timeline(new KeyFrame(Duration.seconds(5), event -> refreshGUI()));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
     }
@@ -289,7 +289,7 @@ public class PlantGridController {
                 else{
                     emptyGrid(i,j);
                     StackPane tileContainer = (StackPane) gridPane.getChildren().get(key);
-                    tileContainer.setStyle("-fx-background-color: #9ea336; -fx-padding: 0px; -fx-border-width: 0;");
+                    tileContainer.setStyle("-fx-background-color: #81854e; -fx-padding: 0px; -fx-border-width: 0;");
                 }
             }
         }
@@ -562,7 +562,7 @@ public class PlantGridController {
     private void updateGridButtonColor(int row, int col) {
         int key = getKey(row, col);
         StackPane tileContainer = (StackPane) gridPane.getChildren().get(key);
-        tileContainer.setStyle("-fx-background-color: #9ea336; -fx-padding: 0px; -fx-border-width: 0;");
+        tileContainer.setStyle("-fx-background-color: #81854e; -fx-padding: 0px; -fx-border-width: 0;");
     }
 
     private void removeTrigger(){
