@@ -5,10 +5,25 @@
 
 <BorderPane fx:controller="com.example.gridproject.PlantGridController"
             xmlns:fx="http://javafx.com/fxml/1">
-
+    <top>
+        <HBox fx:id="weatherPanel" spacing="20" alignment="CENTER" style="-fx-background-color: transparent; -fx-padding: 10px;">
+            <StackPane>
+<!--                <ImageView fx:id="weatherGifSunny"/>-->
+<!--                <ImageView fx:id="weatherGifRainy"/>-->
+<!--                <ImageView fx:id="weatherGifCloudy"/>-->
+<!--                <ImageView fx:id="weatherGifClear"/>-->
+                <ImageView fx:id="currentWeatherGif" fitWidth="2500" fitHeight="150"/>
+                <VBox alignment="CENTER">
+                    <Label fx:id="weatherLabel" text="Weather: Clear" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
+                    <Label fx:id="tempLabel" text="Temp: 59°F" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
+                    <Label fx:id="dayLabel" text="Day: 1" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
+                </VBox>
+            </StackPane>
+        </HBox>
+    </top>
     <!-- Sidebar on the left -->
     <left>
-        <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #ddd;" alignment="CENTER">
+        <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #D2B48C;" alignment="CENTER" maxHeight="Infinity">
             <Label text="Select a Plant" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
 
             <Button fx:id="plantType1" text="Plant 1">
@@ -57,16 +72,31 @@
         </VBox>
     </left>
 
-    <!-- Grid in the center -->
     <center>
-        <GridPane fx:id="gridPane" hgap="5" vgap="5" alignment="CENTER" style="-fx-border-width: 0; -fx-background-color: transparent;"/>
+        <HBox alignment="CENTER" style="-fx-background-color: #D2B48C">
+            <Separator orientation="VERTICAL" style="-fx-padding: 0; -fx-border-width:1px; -fx-border-color: black;" />
+
+            <Region HBox.hgrow="ALWAYS"/>
+            <GridPane fx:id="gridPane" hgap="5" vgap="5" alignment="CENTER" style="-fx-border-width: 0; -fx-background-color: #D2B48C;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+        </HBox>
+        <!-- Vertical separator between grid and event log -->
+
     </center>
 
+    <!-- Grid in the center -->
+<!--    <center>-->
+
+<!--    </center>-->
+
     <right>
-        <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #eee;" alignment="TOP_RIGHT">
+        <HBox alignment="CENTER" style="-fx-background-color: #D2B48C">
+        <Separator orientation="VERTICAL" style="-fx-padding: 0; -fx-border-width: 1px; -fx-border-color: black;"/>
+        <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #D2B48C;" alignment="TOP_RIGHT">
             <Label text="Event Log:" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
             <TextArea fx:id="logTextArea" editable="false" wrapText="true" prefWidth="250" prefHeight="400"/>
         </VBox>
+        </HBox>
     </right>
 </BorderPane>
 

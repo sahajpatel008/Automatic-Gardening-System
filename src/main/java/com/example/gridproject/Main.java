@@ -21,26 +21,38 @@ import java.util.concurrent.TimeUnit;
 
 public class Main extends Application {
     private static GardenHandler gardenHandler;
-
+    PlantGridController controller;
     @Override
     public void start(Stage stage) throws IOException {
 //        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/plant_grid.fxml"));
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/plant_grid.fxml"));
-        System.out.println("Its working!??");
-        if (fxmlLoader.getLocation() == null) {
-            System.err.println("FXML file not found! Check path.");
+        try{
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/plant_grid.fxml"));
+            System.out.println("Its working!??");
+            if (fxmlLoader.getLocation() == null) {
+                System.err.println("FXML file not found! Check path.");
+            }
+            controller = fxmlLoader.getController();
+            Toolkit toolkit = Toolkit.getDefaultToolkit();
+            Dimension screenSize = toolkit.getScreenSize();
+            int width = (int) screenSize.getWidth();
+            int height = (int) screenSize.getHeight();
+            System.out.println("Width: " + width);
+            System.out.println("Height: " + height);
+            Scene scene = new Scene(fxmlLoader.load(), width, height);
+            stage.setTitle("Plant Grid!");
+            stage.setScene(scene);
+            stage.setMaximized(true);
+            stage.show();
+            stage.setOnCloseRequest(event -> {
+                if (controller != null) {
+                    controller.onClose();
+                }
+            });
         }
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Dimension screenSize = toolkit.getScreenSize();
-        int width = (int) screenSize.getWidth();
-        int height = (int) screenSize.getHeight();
-        System.out.println("Width: " + width);
-        System.out.println("Height: " + height);
-        Scene scene = new Scene(fxmlLoader.load(), width, height);
-        stage.setTitle("Plant Grid!");
-        stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -48,8 +60,9 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/plant_grid.fxml"));
         try {
             loader.load();
-            PlantGridController controller = loader.getController();
-            controller.printGridDetails();
+            if(controller != null) {
+                controller.printGridDetails();
+            }
         } catch (Exception e) {
             System.err.println("Failed to load controller: " + e.getMessage());
             e.printStackTrace();
