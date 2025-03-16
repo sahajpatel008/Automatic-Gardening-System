@@ -109,7 +109,6 @@ public class PlantGridController {
     @FXML
     private Label dayLabel;
 
-
     private Timeline timeline;
 
     Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -126,15 +125,11 @@ public class PlantGridController {
     private final int GRID_SIZE = 4;
     private final Button[][] buttons = new Button[GRID_SIZE][GRID_SIZE];
     private Image selectedPlantImage = null;
-//    private Plant selectedPlantObject = null;
     private String plantType = null;
-//    private final Map<String, Plant> plantGridMap = new HashMap<>();
     GardenHandler gardenHandler = new GardenHandler(logTextArea, logger);
     private HashMap<Integer, Plant> plantGridMap = gardenHandler.getGrid();
-//    private HashMap<Integer, List<InsectViewInfo>> insectGridMap = new HashMap<>();
     private String selectedPesticide = "";
     private boolean selectedWater = false;
-    private final String[] pesticideImages = new String[4];
     private boolean selectedFertilizer = false;
     private boolean isAutoPilot = false;
     private boolean isRemovePlant = false;
@@ -149,13 +144,12 @@ public class PlantGridController {
         gifCloudy = new Image(Objects.requireNonNull(getClass().getResource("/images/cloudyImage.png")).toExternalForm(), true);
         gifClear = new Image(Objects.requireNonNull(getClass().getResource("/images/clearImage.png")).toExternalForm(), true);
 
-        // ✅ Set initial weather image
+        // Set initial weather image
         if (currentWeatherGif != null) {
             currentWeatherGif.setImage(gifClear);
         } else {
             System.err.println("⚠ currentWeatherGif is null — check your FXML binding.");
-        }      // the following statement is used to log any messages
-
+        }
 
         setupWeatherPanel();
         setupGrid();
@@ -175,22 +169,8 @@ public class PlantGridController {
         loadImage(manure, "images/fertilizer.png");
         loadImage(removePlantImage, "images/remove.jpg");
 
-
-
-
         setWeatherGifWidth();
         runFor24Hours();
-
-//        pesticideImages[0] = "images/pesticide.png";
-//        pesticideImages[1] = "images/pesticide1.png";
-//        pesticideImages[2] = "images/pesticide2.png";
-//        pesticideImages[3] = "images/pesticide3.png";
-//
-//        loadImage(pesticideImage1, pesticideImages[0]);
-//        loadImage(pesticideImage2, pesticideImages[1]);
-//        loadImage(pesticideImage3, pesticideImages[2]);
-//        loadImage(pesticideImage4, pesticideImages[3]);
-
         setupLogger();
         startRefreshTimer();
     }
@@ -311,22 +291,6 @@ public class PlantGridController {
         weatherPanel.setAlignment(Pos.CENTER);
         weatherPanel.setStyle("-fx-background-color: transparent; -fx-padding: 10px;");
 
-
-        // StackPane to overlay text on image
-//        StackPane stackPane = new StackPane();
-
-        // Load the GIF
-//        String curr = "Rainy";
-
-        // VBox to organize labels
-//        VBox textContainer = new VBox();
-//        textContainer.setAlignment(Pos.CENTER);
-//        textContainer.setSpacing(5); // Adjust spacing between labels
-
-//        weatherLabel = new Label("Weather: Clear");
-//        tempLabel = new Label("Temp: 59°F");
-//        dayLabel = new Label("Day: 1");
-
         // Styling labels to stand out
         String labelStyle = "-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold; "
                 + "-fx-effect: dropshadow( gaussian , black , 5 , 0 , 0 , 0 );";
@@ -334,19 +298,6 @@ public class PlantGridController {
         weatherLabel.setStyle(labelStyle);
         tempLabel.setStyle(labelStyle);
         dayLabel.setStyle(labelStyle);
-
-        // Add labels inside VBox
-//        textContainer.getChildren().addAll(weatherLabel, tempLabel, dayLabel);
-
-//        // StackPane holds the image in the background and text on top
-//        stackPane.getChildren().add(textContainer);
-//
-//        // Add StackPane to HBox
-//        weatherPanel.getChildren().add(stackPane);
-//
-//        // Add panel at the top of the existing layout
-//        BorderPane root = (BorderPane) gridPane.getParent();
-//        root.setTop(weatherPanel);
     }
 
 
@@ -422,7 +373,7 @@ public class PlantGridController {
 
         // FileHandler to write logs to a file
         try {
-            // Create system-independent path to resources/logs/LOG.log
+
             Path logDirectory = Paths.get("src", "main", "resources", "logs");
             if (!Files.exists(logDirectory)) {
                 Files.createDirectories(logDirectory);
@@ -438,23 +389,16 @@ public class PlantGridController {
             e.printStackTrace();
         }
 
-        // TextAreaHandler to display logs in the UI
         Handler textAreaHandler = new Handler() {
             @Override
             public void publish(LogRecord record) {
                 Platform.runLater(() -> {
                     String message = record.getLevel() + ": " + record.getMessage() + "\n";
-
-                    // ✅ Append new log
                     logTextArea.appendText(message);
-
-                    // ✅ Limit the log size by removing older lines
                     String[] lines = logTextArea.getText().split("\n");
                     if (lines.length > LOG_EVENT_MAX_CHAR) {
                         logTextArea.setText(String.join("\n", Arrays.copyOfRange(lines, lines.length - LOG_EVENT_MAX_CHAR, lines.length)));
                     }
-
-                    // ✅ Auto-scroll to the bottom
                     logTextArea.setScrollTop(Double.MAX_VALUE);
                 });
             }
@@ -469,7 +413,7 @@ public class PlantGridController {
         textAreaHandler.setLevel(Level.CONFIG);
         rootLogger.addHandler(textAreaHandler);
 
-        // Set logger level to capture all messages
+        // Set logger level to get all messages
         rootLogger.setLevel(Level.CONFIG);
 
         logger.log(Level.INFO, "Logger setup. Program started... "+logger);
@@ -532,7 +476,7 @@ public class PlantGridController {
                 insectBox.setMaxWidth(50);
 
                 // Shift more towards the right using translateX
-                insectBox.setTranslateX(0); // Adjust this value if needed
+                insectBox.setTranslateX(0);
                 insectBox.setStyle("-fx-background-color: transparent;");
 
                 List<InsectViewInfo> insectList = new ArrayList<>();
@@ -556,8 +500,8 @@ public class PlantGridController {
 
                 tileBox.getChildren().addAll(imageView, tileButton, healthBarContainer, waterBarContainer, nutrientBarContainer);
                 HBox container = new HBox(tileBox, insectBox);
-                container.setSpacing(5); // Remove extra spacing
-                container.setAlignment(Pos.CENTER_LEFT); // Keep both boxes aligned
+                container.setSpacing(5);
+                container.setAlignment(Pos.CENTER_LEFT);
                 tileBox.setAlignment(Pos.CENTER);
                 insectBox.setAlignment(Pos.CENTER);
                 tileContainer.getChildren().add(container);
@@ -662,12 +606,9 @@ public class PlantGridController {
         if (imageUrl == null) {
             System.err.println("Image not found in selectPlant: " + imagePath);
             logger.log(Level.SEVERE, "Error: Couldn't retrieve image for selected plant: {0}", imagePath);
-//            updateLog("Image not found in selectPlant: " + imagePath);
         } else {
             selectedPlantImage = new Image(imageUrl.toExternalForm());
             plantType = type;
-//            selectedPlantObject = plantObject;
-//            System.out.println("Selected plant: " + plantObject.getClass().getSimpleName());
             logger.log(Level.INFO, "Selected plant: " + type);
         }
 
@@ -676,7 +617,6 @@ public class PlantGridController {
     private void sprayPesticide(int r, int c){
         int key = getKey(r,c);
         selectedPesticide = pesticideComboBox.getValue();
-        // Expecting this call
         if(selectedPesticide!=null && gardenHandler.hasPlant(key)){
             gardenHandler.addPesticide(gardenHandler.getPlant(key), selectedPesticide);
             updateGrid(r, c);
@@ -778,7 +718,6 @@ public class PlantGridController {
         HBox container = (HBox) tileContainer.getChildren().get(0);
         VBox tileBox = (VBox) container.getChildren().get(0);
 
-        // ✅ Find the button by type-checking to avoid casting errors
         for (Node node : tileBox.getChildren()) {
             if (node instanceof Button) {
                 Button tileButton = (Button) node;
@@ -789,7 +728,6 @@ public class PlantGridController {
             }
         }
 
-        // ✅ Hide the Health Bar
         for (Node node : tileBox.getChildren()) {
             if (node instanceof HBox) {
                 HBox barContainer = (HBox) node;
@@ -798,9 +736,6 @@ public class PlantGridController {
         }
 
         insectAttack("", row, col);
-
-//        System.out.println("Cell at (" + row + ", " + col + ") hidden.");
-
     }
 
     private HBox createBarContainer(String color, String emoji) {
@@ -817,21 +752,15 @@ public class PlantGridController {
                         "-fx-padding: 0 5 0 0;" +
                         "-fx-font-family: 'Segoe UI Emoji';"
         );
-        emojiLabel.setMinWidth(30); // Increase width to prevent truncation
-
-        // Create the progress bar rectangle
+        emojiLabel.setMinWidth(30);
         Rectangle bar = new Rectangle(50, 5, Color.valueOf(color));
         bar.setArcHeight(2);
         bar.setArcWidth(2);
 
-        // Create label for percentage value
         Label label = new Label("100%");
         label.setMinWidth(25);
         label.setStyle("-fx-text-fill: black; -fx-font-size: 10px; -fx-padding: 0;");
-
-        // ✅ Add emoji, bar, and label in order
         barContainer.getChildren().addAll(emojiLabel, bar, label);
-
         return barContainer;
     }
 
@@ -864,13 +793,11 @@ public class PlantGridController {
         if (selectedPlantImage != null && plantType != null) {
             imageView.setImage(selectedPlantImage);
             imageView.setVisible(true);
-//            gardenHandler.put(key, selectedPlantObject);
             if(plantType != null){
                 if(plantType.equals("Plant1")) gardenHandler.addPlant(key, new Plant1(key));
                 if(plantType.equals("Plant2")) gardenHandler.addPlant(key, new Plant2(key));
                 if (plantType.equals("Plant3")) gardenHandler.addPlant(key, new Plant3(key));
             }
-//            gardenHandler.getPlant(key).displayStatus();
 
             updateBar(healthBar, healthLabel, gardenHandler.getPlant(key).getHealth());
             updateBar(waterBar, waterLabel, gardenHandler.getPlant(key).getWaterLevel());
@@ -884,11 +811,10 @@ public class PlantGridController {
             tileContainer.setStyle("-fx-background-color: #7c9a5f; -fx-padding: 0px; -fx-border-width: 0;");
 //            logger.log(Level.INFO, "Planted "+ selectedPlantObject.getClass().getSimpleName() +" at (" + (row+1) + "," + (col+1) + ")");
 //            printGridDetails();
-//            updateLog("Planted " + selectedPlantObject.getClass().getSimpleName() + " at (" + (row+1) + "," + (col+1) + ")");
+
         } else {
             System.out.println("No plant selected!");
             logger.log(Level.WARNING, "No plant selected!");
-//            updateLog("No plant selected!");
         }
     }
 
