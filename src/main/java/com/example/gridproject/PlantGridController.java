@@ -451,7 +451,7 @@ public class PlantGridController {
                 final int finalCol = col;
 
                 StackPane tileContainer = new StackPane();
-                tileContainer.setStyle("-fx-background-color: #9ea336; -fx-padding: 0px; -fx-border-width: 0;");
+                tileContainer.setStyle("-fx-background-color: #81854e; -fx-padding: 0px; -fx-border-width: 0;");
                 tileContainer.setPadding(new Insets(0, 0, 0, 0));
                 double boxWidth = 0.08*screenWidth;
                 tileContainer.setMinSize(0.11*screenWidth,0.11*screenWidth);
@@ -842,7 +842,7 @@ public class PlantGridController {
             nutrientBarContainer.setVisible(true);
             System.out.println("Planted " + plantType + " at (" + (row+1) + "," + (col+1) + ")");
             StackPane tileContainer = (StackPane) gridPane.getChildren().get(key);
-            tileContainer.setStyle("-fx-background-color: #4a7e2c; -fx-padding: 0px; -fx-border-width: 0;");
+            tileContainer.setStyle("-fx-background-color: #7c9a5f; -fx-padding: 0px; -fx-border-width: 0;");
 //            logger.log(Level.INFO, "Planted "+ selectedPlantObject.getClass().getSimpleName() +" at (" + (row+1) + "," + (col+1) + ")");
 //            printGridDetails();
 //            updateLog("Planted " + selectedPlantObject.getClass().getSimpleName() + " at (" + (row+1) + "," + (col+1) + ")");
