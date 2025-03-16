@@ -122,6 +122,7 @@ public class PlantGridController {
 
 
     private static Logger logger = Logger.getLogger(PlantGridController.class.getName());
+    private static final int LOG_EVENT_MAX_CHAR = 1000;
     private final int GRID_SIZE = 4;
     private final Button[][] buttons = new Button[GRID_SIZE][GRID_SIZE];
     private Image selectedPlantImage = null;
@@ -216,7 +217,7 @@ public class PlantGridController {
             }
         };
 
-        scheduler.scheduleAtFixedRate(taskWrapper, 0, 5, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(taskWrapper, 0, 1, TimeUnit.SECONDS);
 
         // Schedule shutdown after 24 hours
         scheduler.schedule(() -> {
@@ -226,32 +227,38 @@ public class PlantGridController {
     }
 
     private void startRefreshTimer(){
-        timeline = new Timeline(new KeyFrame(Duration.seconds(5), event -> refreshGUI()));
+        timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> refreshGUI()));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
     }
 
-    // Refresh GUI and backend data
     private void refreshGUI() {
         Platform.runLater(() -> {
             try {
-                // Example: Update weather, temperature, and day
                 Random random = new Random();
                 int newTemp = 50 + random.nextInt(30); // 50°F to 80°F
                 String[] weatherTypes = {"Clear", "Rainy", "Cloudy", "Sunny"};
                 String weather = weatherTypes[random.nextInt(weatherTypes.length)];
-                int day = Integer.parseInt(dayLabel.getText().split(":")[1].trim()) + 1;
+
+                int day;
+                try {
+                    day = Integer.parseInt(dayLabel.getText().split(":")[1].trim()) + 1;
+                } catch (NumberFormatException ex) {
+                    logger.log(Level.WARNING, "Invalid day value in label: " + dayLabel.getText());
+                    day = 1; // Default to day 1
+                }
 
                 updateWeather(weather, newTemp, day);
-
-                // Example: Call backend code here
                 simulateBackendLogic();
 
+            } catch (NullPointerException e) {
+                logger.log(Level.SEVERE, "Null pointer exception in refreshGUI: " + e.getMessage(), e);
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error during refresh: " + e.getMessage());
+                logger.log(Level.SEVERE, "Error during refresh: " + e.getMessage(), e);
             }
         });
     }
+
 
     private int getKey(int row, int col){
         return row*GRID_SIZE+col;
@@ -259,43 +266,38 @@ public class PlantGridController {
 
     // Example backend logic
     private void simulateBackendLogic() {
+        try {
+            for (int i = 0; i < GRID_SIZE; i++) {
+                for (int j = 0; j < GRID_SIZE; j++) {
+                    try {
+                        int key = getKey(i, j);
 
+                        if (gardenHandler.hasPlant(key)) {
+                            Plant plant = gardenHandler.getPlant(key);
 
-        for(int i = 0; i < GRID_SIZE; i++) {
-            for(int j = 0; j < GRID_SIZE; j++) {
-                int key = getKey(i, j);
-                if(gardenHandler.hasPlant(key)){
-                    Plant plant = gardenHandler.getPlant(key);
+                            if (plant.getSensor().isInfected()) {
+                                switch (plant.ID) {
+                                    case "Plant1" -> insectAttack("pest1", i, j);
+                                    case "Plant2" -> insectAttack("pest2", i, j);
+                                    case "Plant3" -> insectAttack("pest3", i, j);
+                                    case "Plant4" -> insectAttack("pest4", i, j);
+                                    default -> logger.log(Level.INFO, "Unknown plant ID");
+                                }
+                            } else {
+                                insectAttack("", i, j);
+                            }
 
-                    // has insect
-                    if(plant.getSensor().isInfected()){
-                        if(plant.ID.equals("Plant1")){
-                            insectAttack("pest1", i, j);
+                            updateGrid(i, j);
+                        } else {
+                            emptyGrid(i, j);
                         }
-                        else if(plant.ID.equals("Plant2")){
-                            insectAttack("pest2", i, j);
-                        }
-                        else if(plant.ID.equals("Plant3")){
-                            insectAttack("pest3", i, j);
-                        }
-                        else if(plant.ID.equals("Plant4")){
-                            insectAttack("pest4", i, j);
-                        }
+                    } catch (NullPointerException e) {
+                        logger.log(Level.WARNING, "Null value in simulateBackendLogic at [" + i + "][" + j + "]", e);
                     }
-
-                    else{
-                        insectAttack("", i, j);
-                    }
-
-                    // healthbar, nutrientbar
-                    updateGrid(i, j);
-                }
-                else{
-                    emptyGrid(i,j);
-                    StackPane tileContainer = (StackPane) gridPane.getChildren().get(key);
-                    tileContainer.setStyle("-fx-background-color: #81854e; -fx-padding: 0px; -fx-border-width: 0;");
                 }
             }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "simulateBackendLogic failed: " + e.getMessage(), e);
         }
     }
 
@@ -442,15 +444,18 @@ public class PlantGridController {
             public void publish(LogRecord record) {
                 Platform.runLater(() -> {
                     String message = record.getLevel() + ": " + record.getMessage() + "\n";
-                    Text text = new Text(message);
 
-                    if (record.getLevel().equals(Level.SEVERE)) {
-                        text.setStyle("-fx-fill: red; -fx-font-weight: bold;");
-                    } else {
-                        text.setStyle("-fx-fill: black;");
+                    // ✅ Append new log
+                    logTextArea.appendText(message);
+
+                    // ✅ Limit the log size by removing older lines
+                    String[] lines = logTextArea.getText().split("\n");
+                    if (lines.length > LOG_EVENT_MAX_CHAR) {
+                        logTextArea.setText(String.join("\n", Arrays.copyOfRange(lines, lines.length - LOG_EVENT_MAX_CHAR, lines.length)));
                     }
 
-                    logTextArea.appendText(text.getText());
+                    // ✅ Auto-scroll to the bottom
+                    logTextArea.setScrollTop(Double.MAX_VALUE);
                 });
             }
 
@@ -730,33 +735,40 @@ public class PlantGridController {
         }
     }
 
-    private void updateGrid(int r, int c){
-        int key = getKey(r,c);
-        StackPane tileContainer = (StackPane) gridPane.getChildren().get(r * GRID_SIZE + c);
-        if(gardenHandler.hasPlant(key)){
+    private void updateGrid(int r, int c) {
+        try {
+            int key = getKey(r, c);
+            StackPane tileContainer = (StackPane) gridPane.getChildren().get(r * GRID_SIZE + c);
 
-            Plant selectedPlant = gardenHandler.getPlant(key);
+            if (gardenHandler.hasPlant(key)) {
+                Plant selectedPlant = gardenHandler.getPlant(key);
 
-            // for water
-            HBox waterBarContainer = (HBox) ((VBox) ((HBox) tileContainer.getChildren().getFirst()).getChildren().getFirst()).getChildren().get(2);
-            Rectangle waterBar = (Rectangle) waterBarContainer.getChildren().get(1);
-            Label waterLabel = (Label) waterBarContainer.getChildren().get(2);
+                // Wrap UI updates in a try-catch
+                try {
+                    HBox waterBarContainer = (HBox) ((VBox) ((HBox) tileContainer.getChildren().getFirst()).getChildren().getFirst()).getChildren().get(2);
+                    Rectangle waterBar = (Rectangle) waterBarContainer.getChildren().get(1);
+                    Label waterLabel = (Label) waterBarContainer.getChildren().get(2);
 
-            // for nutrient
-            HBox nutrientBarContainer = (HBox) ((VBox) ((HBox) tileContainer.getChildren().getFirst()).getChildren().getFirst()).getChildren().get(3);
-            Rectangle nutrientBar = (Rectangle) nutrientBarContainer.getChildren().get(1);
-            Label nutrientLabel = (Label) nutrientBarContainer.getChildren().get(2);
+                    HBox nutrientBarContainer = (HBox) ((VBox) ((HBox) tileContainer.getChildren().getFirst()).getChildren().getFirst()).getChildren().get(3);
+                    Rectangle nutrientBar = (Rectangle) nutrientBarContainer.getChildren().get(1);
+                    Label nutrientLabel = (Label) nutrientBarContainer.getChildren().get(2);
 
-            // for health
-            HBox healthBarContainer = (HBox) ((VBox) ((HBox) tileContainer.getChildren().getFirst()).getChildren().getFirst()).getChildren().get(1);
-            Rectangle healthBar = (Rectangle) healthBarContainer.getChildren().get(1);
-            Label healthLabel = (Label) healthBarContainer.getChildren().get(2);
+                    HBox healthBarContainer = (HBox) ((VBox) ((HBox) tileContainer.getChildren().getFirst()).getChildren().getFirst()).getChildren().get(1);
+                    Rectangle healthBar = (Rectangle) healthBarContainer.getChildren().get(1);
+                    Label healthLabel = (Label) healthBarContainer.getChildren().get(2);
 
-            updateBar(waterBar, waterLabel, selectedPlant.getWaterLevel());
-            updateBar(nutrientBar, nutrientLabel, selectedPlant.getFertilizerLevel());
-            updateBar(healthBar, healthLabel, selectedPlant.getHealth());
+                    updateBar(waterBar, waterLabel, selectedPlant.getWaterLevel());
+                    updateBar(nutrientBar, nutrientLabel, selectedPlant.getFertilizerLevel());
+                    updateBar(healthBar, healthLabel, selectedPlant.getHealth());
+                } catch (IndexOutOfBoundsException e) {
+                    logger.log(Level.WARNING, "Grid update failed due to index issue: " + e.getMessage(), e);
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to update grid: " + e.getMessage(), e);
         }
     }
+
 
     private void emptyGrid(int row, int col){
         int key = getKey(row, col);
@@ -826,20 +838,21 @@ public class PlantGridController {
 
 
     private void loadImage(ImageView imageView, String imagePath) {
-        if(imageView == null){
-            System.err.println("Image is null!");
-            return;
-        }
-        URL imageUrl = getClass().getResource("/" + imagePath);
-        if (imageUrl == null) {
-            System.err.println("Image not found: " + imagePath);
-            logger.log(Level.SEVERE, "Error: Image not found: {0}", imagePath);
-//            updateLog("Image not found: " + imagePath);
-        } else {
-            imageView.setImage(new Image(imageUrl.toExternalForm()));
-            System.out.println("Loaded: " + imagePath);
-            logger.log(Level.INFO, "Loaded: {0}", imagePath);
-//            updateLog("Loaded: " + imagePath);
+        try {
+            if (imageView == null) {
+                logger.log(Level.SEVERE, "ImageView is null for path: " + imagePath);
+                return;
+            }
+
+            URL imageUrl = getClass().getResource("/" + imagePath);
+            if (imageUrl == null) {
+                logger.log(Level.SEVERE, "Image not found: " + imagePath);
+            } else {
+                imageView.setImage(new Image(imageUrl.toExternalForm()));
+                logger.log(Level.INFO, "Loaded image: " + imagePath);
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error loading image: " + imagePath + " - " + e.getMessage(), e);
         }
     }
 
@@ -888,37 +901,32 @@ public class PlantGridController {
     }
 
     public void insectAttack(String insectType, int row, int col) {
-        int key = getKey(row,col);
+        try {
+            int key = getKey(row, col);
+            StackPane tileContainer = (StackPane) gridPane.getChildren().get(key);
+            HBox container = (HBox) tileContainer.getChildren().get(0);
+            VBox insectBox = (VBox) container.getChildren().get(1);
 
+            if (!insectBox.getChildren().isEmpty()) {
+                ImageView insectView = (ImageView) insectBox.getChildren().get(0);
 
-        StackPane tileContainer = (StackPane) gridPane.getChildren().get(key);
-        HBox container = (HBox) tileContainer.getChildren().get(0);
-        VBox insectBox = (VBox) container.getChildren().get(1);
+                if (insectType.isEmpty()) {
+                    insectView.setVisible(false);
+                    return;
+                }
 
-
-
-        if (insectBox.getChildren().size() > 0) {
-            // Get the first insect view (or loop for multiple insects)
-            ImageView insectView = (ImageView) insectBox.getChildren().get(0);
-
-            // Load new image
-
-
-            if(insectType.isEmpty()){
-                insectView.setVisible(false);
-                return;
+                URL imageUrl = getClass().getResource("/images/" + insectType + ".png");
+                if (imageUrl != null) {
+                    insectView.setImage(new Image(imageUrl.toExternalForm()));
+                    insectView.setVisible(true);
+                } else {
+                    logger.log(Level.WARNING, "Insect image not found: " + insectType);
+                }
             }
-
-            URL imageUrl = getClass().getResource("/images/" + insectType + ".png");
-            if (imageUrl != null) {
-                insectView.setImage(new Image(imageUrl.toExternalForm()));
-                insectView.setVisible(true);
-            }
-            else{
-                System.out.println("cno");
-            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error in insectAttack: " + e.getMessage(), e);
         }
-
     }
+
 
 }
