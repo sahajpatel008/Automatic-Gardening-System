@@ -113,7 +113,7 @@ public class PlantGridController {
 
     private static Logger logger = Logger.getLogger(PlantGridController.class.getName());
     private static final int LOG_EVENT_MAX_CHAR = 1000;
-    private final int GRID_SIZE = 8;
+    private final int GRID_SIZE = 4;
     private final Button[][] buttons = new Button[GRID_SIZE][GRID_SIZE];
     private Image selectedPlantImage = null;
     private String plantType = null;
@@ -129,10 +129,10 @@ public class PlantGridController {
     private ScheduledExecutorService scheduler;
 
     public void initialize() {
-        gifSunny = new Image(Objects.requireNonNull(getClass().getResource("/images/sunImage.png")).toExternalForm(), true);
-        gifRainy = new Image(Objects.requireNonNull(getClass().getResource("/images/rainImage.png")).toExternalForm(), true);
-        gifCloudy = new Image(Objects.requireNonNull(getClass().getResource("/images/cloudyImage.png")).toExternalForm(), true);
-        gifClear = new Image(Objects.requireNonNull(getClass().getResource("/images/clearImage.png")).toExternalForm(), true);
+        gifSunny = new Image(Objects.requireNonNull(getClass().getResource("/images/sunCool.gif")).toExternalForm(), true);
+        gifRainy = new Image(Objects.requireNonNull(getClass().getResource("/images/rain1.gif")).toExternalForm(), true);
+        gifCloudy = new Image(Objects.requireNonNull(getClass().getResource("/images/cloudyWO_BG.gif")).toExternalForm(), true);
+        gifClear = new Image(Objects.requireNonNull(getClass().getResource("/images/clear1.gif")).toExternalForm(), true);
 
         // Set initial weather image
         if (currentWeatherGif != null) {
@@ -195,7 +195,7 @@ public class PlantGridController {
             }
         };
 
-        scheduler.scheduleAtFixedRate(taskWrapper, 0, 1, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(taskWrapper, 0, 30, TimeUnit.MILLISECONDS);
 
         // Schedule shutdown after 24 hours
         scheduler.schedule(() -> {
@@ -205,7 +205,7 @@ public class PlantGridController {
     }
 
     private void startRefreshTimer(){
-        timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> refreshGUI()));
+        timeline = new Timeline(new KeyFrame(Duration.millis(100), event -> refreshGUI()));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
     }
@@ -213,22 +213,16 @@ public class PlantGridController {
     private void refreshGUI() {
         Platform.runLater(() -> {
             try {
-                Random random = new Random();
-                int newTemp = 50 + random.nextInt(30); // 50°F to 80°F
-                String[] weatherTypes = {"Clear", "Rainy", "Cloudy", "Sunny"};
-                String weather = weatherTypes[random.nextInt(weatherTypes.length)];
 
-                int day;
-                try {
-                    day = Integer.parseInt(dayLabel.getText().split(":")[1].trim()) + 1;
-                } catch (NumberFormatException ex) {
-                    logger.log(Level.WARNING, "Invalid day value in label: " + dayLabel.getText());
-                    day = 1; // Default to day 1
-                }
+                int newTemp = gardenHandler.getTemperature();
+//                String[] weatherTypes = {"Clear", "Rainy", "Cloudy", "Sunny"};
+                String weather = gardenHandler.getWeather();
 
-                updateWeather(weather, newTemp, day);
+                String day = gardenHandler.getTime();
+
                 simulateBackendLogic();
-
+                updateWeather(weather);
+                updateDayTemperature(newTemp, day);
             } catch (NullPointerException e) {
                 logger.log(Level.SEVERE, "Null pointer exception in refreshGUI: " + e.getMessage(), e);
             } catch (Exception e) {
@@ -338,14 +332,16 @@ public class PlantGridController {
         dayLabel.setStyle(labelStyle);
     }
 
-    private void updateWeather(String weather, int temperature, int day) {
+    private void updateDayTemperature(int temperature, String day) {
+        tempLabel.setText("Temp: " + temperature + "°C");
+        dayLabel.setText("Day: " + day);
+    }
+    private void updateWeather(String weather) {
         if (Objects.equals(currentWeather, weather)) {
             return;
         }
         currentWeather = weather;
         weatherLabel.setText("Weather: " + weather);
-        tempLabel.setText("Temp: " + temperature + "°F");
-        dayLabel.setText("Day: " + day);
         switch (weather) {
             case "Clear" -> currentWeatherGif.setImage(gifClear);
             case "Sunny" -> currentWeatherGif.setImage(gifSunny);
@@ -506,7 +502,8 @@ public class PlantGridController {
 
             }
         }
-        updateWeather("Sunny🌞", 70, 28);
+        updateWeather("Sunny🌞");
+        updateDayTemperature(70, "28");
     }
 
     private void functionCumulative(int row, int col) {

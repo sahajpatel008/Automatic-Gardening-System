@@ -1,28 +1,35 @@
 package Handler;
 
 import GardenEntities.*;
-import javafx.application.Platform;
-import javafx.scene.control.TextArea;
-import javafx.scene.text.Text;
 
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.logging.Handler;
 
 
 public class GardenHandler {
     private HashMap<Integer, Plant> grid;
     private int count;
     private final Logger logger;
-
-
-    // Constructor
+    private String weather;
+    private int seconds;
+    private int minutes;
+    private int hours;
+    private int days;
+    private int temperature;
+    private int currHour;
+        // Constructor
     public GardenHandler(Logger logger) {
         grid = new HashMap<>();
         count = 0;
+        seconds = 0;
+        minutes = 0;
+        hours = 0;
+        days = 0;
+        weather = "Sunny";
+        temperature = 0;
+        updateTemperature();
         this.logger = logger;
     }
 
@@ -157,9 +164,20 @@ public class GardenHandler {
 
     // Functions to call every second
     private void dryPlants(){
-        for(Plant plant: grid.values()){
-            if(plant.getWaterLevel()> 10)plant.setWaterLevel((int) (plant.getWaterLevel()-(10*Math.random())));
+        int delta = 8;
+        if(weather.equals("Sunny")){
+            delta = 14;
         }
+        else if(weather.equals("Rainy")){
+            delta = -5;
+        }
+
+        for(Plant plant: grid.values()){
+            if(plant.getWaterLevel()> 10) {
+                plant.setWaterLevel((int) (plant.getWaterLevel() - (delta * Math.random()))%100);
+            }
+        }
+
     }
 
     private void absorbFertilizer(){
@@ -174,7 +192,6 @@ public class GardenHandler {
         }
     }
 
-
     private void deadPlant(){
         for(Plant plant: grid.values()){
             if(plant.getHealth() <= 0) {
@@ -186,12 +203,68 @@ public class GardenHandler {
 
     // Functions to call every second for Automation
 
-    private void essentialFunctions(){
-        dryPlants();
-        absorbFertilizer();
-        pestInvasion();
-        updateHealth();
+    private void updateTime(){
+        seconds++;
+        if(seconds == 60) minutes++;
+        seconds %= 60;
+        if(minutes == 60) hours++;
+        minutes %= 60;
+        if(hours == 24) days++;
+        hours %= 24;
+    }
+
+    public String getTime(){
+        return Integer.toString(days)+ " Days : " + Integer.toString(hours)+ " Hours : " + Integer.toString(minutes) + " Minutes : " + Integer.toString(seconds) + " Seconds";
+    }
+
+    private void updateWeather(){
+        if(hours%2 == 0){
+            int rand = (int) (Math.random() * 4);
+            if(rand == 0){
+                weather = "Sunny";
+            }
+            if(rand == 1){
+                weather = "Rainy";
+            }
+            if(rand == 2){
+                weather = "Cloudy";
+
+            }
+            if (rand == 3){
+                weather = "Clear";
+
+            }
+        }
+        updateTemperature();
+    }
+
+    private void updateTemperature(){
+        if(weather.equals("Sunny")){
+            temperature = 35+ (int) (Math.random()*10);
+        }
+        if(weather.equals("Rainy")){
+            temperature = 15+ (int) (Math.random()*10);
+        }
+        if(weather.equals("Cloudy")){
+            temperature = 20+ (int) (Math.random()*10);
+        }
+        if(weather.equals("Clear")){
+            temperature = 25+ (int) (Math.random()*10);
+        }
+    }
+
+
+    private void essentialFunctions(int count){
+        if(count%30 == 0) {
+            dryPlants();
+            absorbFertilizer();
+            pestInvasion();
+            updateHealth();
+            updateTemperature();
+        }
+        if(count == 0)updateWeather();
         deadPlant();
+        updateTime();
     }
 
     private void automaticFunctions(){
@@ -201,19 +274,27 @@ public class GardenHandler {
 
     public void iteration(boolean isAutomatic){
         //System.out.println(grid.size());
-        essentialFunctions();
+        essentialFunctions(count);
         if(isAutomatic){
             automaticFunctions();
-            if(count == 0) {
+            if(count%50 == 0) {
                 autoAddPesticide();
             }
         }
         count++;
-        count%=15;
+        count%=1000;
     }
 
     public HashMap<Integer, Plant> getGrid() {
         return grid;
+    }
+
+    public String getWeather() {
+        return weather;
+    }
+
+    public int getTemperature() {
+        return temperature;
     }
 }
 
