@@ -2,8 +2,7 @@ package Handler;
 
 import GardenEntities.*;
 
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +18,8 @@ public class GardenHandler {
     private int days;
     private int temperature;
     private int currHour;
+    private int deadPlants;
+    private int currentPlants;
         // Constructor
     public GardenHandler(Logger logger) {
         grid = new HashMap<>();
@@ -27,6 +28,7 @@ public class GardenHandler {
         minutes = 0;
         hours = 0;
         days = 0;
+        currentPlants = 0;
         weather = "Sunny";
         temperature = 0;
         updateTemperature();
@@ -52,6 +54,7 @@ public class GardenHandler {
 
     public void addPlant(int coordinate, Plant plant){
         grid.put(coordinate,plant);
+        currentPlants++;
         logger.log(Level.INFO, "Added"+ plant.ID+" plant at " + coordinate +"th tile");
     }
 
@@ -100,6 +103,8 @@ public class GardenHandler {
     // Automatic Functions
 
     public void changeHealth(Plant plant){
+
+        System.out.println(plant.getWaterLevel() + " " + plant.getHealth());
         int health = plant.getWaterLevel()+plant.getFertilizerLevel();
         health = health/2;
         if(plant.getSensor().isInfected()) {
@@ -174,8 +179,12 @@ public class GardenHandler {
 
         for(Plant plant: grid.values()){
             if(plant.getWaterLevel()> 10) {
-                plant.setWaterLevel((int) (plant.getWaterLevel() - (delta * Math.random()))%100);
+                int waterLevel = (int) (plant.getWaterLevel() - (delta * Math.random()));
+                if(waterLevel > 100) waterLevel = 100;
+                plant.setWaterLevel(waterLevel);
+                System.out.println(plant.getWaterLevel());
             }
+
         }
 
     }
@@ -196,6 +205,8 @@ public class GardenHandler {
         for(Plant plant: grid.values()){
             if(plant.getHealth() <= 0) {
                 removePlant(plant.getCoordinate());
+                deadPlants++;
+                currentPlants--;
                 logger.log(Level.INFO, "Dead plant at ("+ plant.getCoordinate() +")");
             }
         }
@@ -277,7 +288,7 @@ public class GardenHandler {
         essentialFunctions(count);
         if(isAutomatic){
             automaticFunctions();
-            if(count%50 == 0) {
+            if(count%300 == 0) {
                 autoAddPesticide();
             }
         }
@@ -287,6 +298,37 @@ public class GardenHandler {
 
     public HashMap<Integer, Plant> getGrid() {
         return grid;
+    }
+
+
+    // APIS
+
+    Map<String, Object> getPlants(){
+        Map<String, Object> map = new HashMap<>();
+        List<String> names = new ArrayList<>(Arrays.asList(new String[]{"Plant 1", "Plant 2", "Plant 3", "Plant 4"}));
+        map.put("Plants", names);
+        return map;
+    }
+
+    void rain(int amount){
+        weather = "Rainy";
+        updateWeather();
+    }
+
+    void updateTemperature(int t){
+        if (t>=40 && t<=120 )temperature = t;
+    }
+
+    void parasite(String type){
+        for(Plant plant : grid.values()){
+            if(!plant.isPestInfected() && Objects.equals(plant.ID, type)){
+                pestInfection(plant, new Pest1(plant));
+            }
+        }
+    }
+
+    void getState(){
+        logger.log(Level.INFO, "Current state has "+ currentPlants + " alive and "+ deadPlants +" dead.");
     }
 
     public String getWeather() {
