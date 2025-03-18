@@ -128,10 +128,10 @@ public class PlantGridController {
     private ScheduledExecutorService scheduler;
 
     public void initialize() {
-        gifSunny = new Image(Objects.requireNonNull(getClass().getResource("/images/sunnyImage.png")).toExternalForm(), true);
-        gifRainy = new Image(Objects.requireNonNull(getClass().getResource("/images/rainImage.png")).toExternalForm(), true);
-        gifCloudy = new Image(Objects.requireNonNull(getClass().getResource("/images/cloudyImage.png")).toExternalForm(), true);
-        gifClear = new Image(Objects.requireNonNull(getClass().getResource("/images/clearImage.png")).toExternalForm(), true);
+        gifSunny = new Image(Objects.requireNonNull(getClass().getResource("/images/sunCool.gif")).toExternalForm(), true);
+        gifRainy = new Image(Objects.requireNonNull(getClass().getResource("/images/rain1.gif")).toExternalForm(), true);
+        gifCloudy = new Image(Objects.requireNonNull(getClass().getResource("/images/cloudyWO_BG.gif")).toExternalForm(), true);
+        gifClear = new Image(Objects.requireNonNull(getClass().getResource("/images/clear.gif")).toExternalForm(), true);
 
         // Set initial weather image
         if (currentWeatherGif != null) {
@@ -272,7 +272,7 @@ public class PlantGridController {
         autoPilotButton = new Button("AutoPilot");
         autoPilotButton.setMinSize(120, 40);
         if(isAutoPilot)
-            autoPilotButton.setStyle("-fx-text-fill: black; -fx-font-size: 14px;  -fx-border-color: black; -fx-background-color: GREEN");
+            autoPilotButton.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-background-color: GREEN");
         else
             autoPilotButton.setStyle("-fx-text-fill: black; -fx-font-size: 14px;  -fx-border-color: black; -fx-background-color: TRANSPARENT;");
 
