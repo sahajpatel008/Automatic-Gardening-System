@@ -23,19 +23,19 @@
         <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #D2B48C;" alignment="CENTER" maxHeight="Infinity">
             <Label text="Select a Plant" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
 
-            <Button fx:id="plantType1" text="Plant 1">
+            <Button fx:id="plantType1" text="Sunflower">
                 <graphic>
                     <ImageView fitWidth="50" fitHeight="50" fx:id="plantImage1"/>
                 </graphic>
             </Button>
 
-            <Button fx:id="plantType2" text="Plant 2">
+            <Button fx:id="plantType2" text="Jasmine">
                 <graphic>
                     <ImageView fitWidth="50" fitHeight="50" fx:id="plantImage2"/>
                 </graphic>
             </Button>
 
-            <Button fx:id="plantType3" text="Plant 3">
+            <Button fx:id="plantType3" text="Pomegranate">
                 <graphic>
                     <ImageView fitWidth="50" fitHeight="50" fx:id="plantImage3"/>
                 </graphic>

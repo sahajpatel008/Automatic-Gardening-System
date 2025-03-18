@@ -120,8 +120,9 @@ public class PlantGridController {
     private String selectedPesticide = "";
     private boolean selectedWater = false;
     private boolean selectedFertilizer = false;
-    private boolean isAutoPilot = false;
+    private boolean isAutoPilot = true;
     private boolean isRemovePlant = false;
+    private boolean isSelectPlant = false;
     private String currentWeather = "Rainy";
     private Image gifSunny, gifRainy, gifCloudy, gifClear;
     private ScheduledExecutorService scheduler;
@@ -136,13 +137,13 @@ public class PlantGridController {
         if (currentWeatherGif != null) {
             currentWeatherGif.setImage(gifClear);
         } else {
-            System.err.println("⚠ currentWeatherGif is null — check your FXML binding.");
+            System.err.println("currentWeatherGif is null — check your FXML binding.");
         }
 
         setupWeatherPanel();
         setupGrid();
         setupPlantSelection();
-        pesticideComboBox.getItems().addAll("Plant1", "Plant2", "Plant3", "Plant4");
+        pesticideComboBox.getItems().addAll("Pest 1", "Pest 2", "Pest 3", "Pest 4");
         setupPesticideSelection();
         waterTrigger();
         fertilizerTrigger();
@@ -220,6 +221,7 @@ public class PlantGridController {
 
                 simulateBackendLogic();
                 updateWeather(weather);
+                checkSelectPlantButtonColor();
                 updateDayTemperature(newTemp, day);
             } catch (NullPointerException e) {
                 logger.log(Level.SEVERE, "Null pointer exception in refreshGUI: " + e.getMessage(), e);
@@ -269,7 +271,10 @@ public class PlantGridController {
     private void createAutoPilotButton() {
         autoPilotButton = new Button("AutoPilot");
         autoPilotButton.setMinSize(120, 40);
-        autoPilotButton.setStyle("-fx-text-fill: black; -fx-font-size: 14px;  -fx-border-color: black");
+        if(isAutoPilot)
+            autoPilotButton.setStyle("-fx-text-fill: black; -fx-font-size: 14px;  -fx-border-color: black; -fx-background-color: GREEN");
+        else
+            autoPilotButton.setStyle("-fx-text-fill: black; -fx-font-size: 14px;  -fx-border-color: black; -fx-background-color: TRANSPARENT;");
 
         autoPilotButton.setOnAction(event -> {
             startAutoPilot();
@@ -546,40 +551,47 @@ public class PlantGridController {
     // Setup plant selection buttons
     private void setupPlantSelection() {
         plantType1.setOnAction(event -> {
-            selectPlant("/images/plant.jpg", "Plant1");
-            updatePlantButtonColor();
+            selectPlant("/images/plant.jpg", "Sunflower");
         });
         plantType2.setOnAction(event -> {
-            selectPlant("/images/plant2.jpg", "Plant2");
-            updatePlantButtonColor();
+            selectPlant("/images/plant2.jpg", "Jasmine");
         });
         plantType3.setOnAction(event -> {
-            selectPlant("/images/plant3.jpg", "Plant3");
-            updatePlantButtonColor();
+            selectPlant("/images/plant3.jpg", "Pomegranate");
         });
     }
 
     private void updatePlantButtonColor() {
-        if(plantType.equals("Plant1")) {
-            plantType1.setStyle("-fx-background-color: #f4f2a1;");
-            plantType2.setStyle("");
-            plantType3.setStyle("");
-        }
-        else if(plantType.equals("Plant2")) {
-            plantType2.setStyle("-fx-background-color: #f4f2a1;");
-            plantType3.setStyle("");
-            plantType1.setStyle("");
-        }
-        else if(plantType.equals("Plant3")) {
-            plantType3.setStyle("-fx-background-color: #f4f2a1;");
-            plantType2.setStyle("");
-            plantType1.setStyle("");
-        }
+        if(isSelectPlant)
+            if(plantType.equals("Sunflower")) {
+                plantType1.setStyle("-fx-background-color: #f4f2a1;");
+                plantType2.setStyle("");
+                plantType3.setStyle("");
+            }
+            else if(plantType.equals("Jasmine")) {
+                plantType2.setStyle("-fx-background-color: #f4f2a1;");
+                plantType3.setStyle("");
+                plantType1.setStyle("");
+            }
+            else if(plantType.equals("Pomegranate")) {
+                plantType3.setStyle("-fx-background-color: #f4f2a1;");
+                plantType2.setStyle("");
+                plantType1.setStyle("");
+            }
+    }
+
+    private String getPlantForPest(String pest){
+        return switch (pest) {
+            case "Pest 1" -> "Plant1";
+            case "Pest 2" -> "Plant2";
+            case "Pest 3" -> "Plant3";
+            case null, default -> "Plant4";
+        };
     }
 
     private void setupPesticideSelection() {
         pesticideComboBox.setOnAction(event -> {
-            String selectedPesticide = pesticideComboBox.getValue();
+            String selectedPesticide = getPlantForPest(pesticideComboBox.getValue());
             if (!Objects.equals(selectedPesticide, "")) {
                 this.selectedPesticide = selectedPesticide;
                 logger.log(Level.INFO, "Selected " + selectedPesticide);
@@ -587,15 +599,26 @@ public class PlantGridController {
         });
     }
 
+    private void checkSelectPlantButtonColor(){
+        if(!isRemovePlant){
+            plantType1.setStyle("");
+            plantType2.setStyle("");
+            plantType3.setStyle("");
+        }
+    }
+
     private void selectPlant(String imagePath, String type) {
         URL imageUrl = getClass().getResource(imagePath);
-        if (imageUrl == null) {
-            System.err.println("Image not found in selectPlant: " + imagePath);
-            logger.log(Level.SEVERE, "Error: Couldn't retrieve image for selected plant: {0}", imagePath);
-        } else {
-            selectedPlantImage = new Image(imageUrl.toExternalForm());
-            plantType = type;
-            logger.log(Level.INFO, "Selected plant: " + type);
+        isSelectPlant = !isSelectPlant;
+        if(isSelectPlant){
+            if (imageUrl == null) {
+                System.err.println("Image not found in selectPlant: " + imagePath);
+                logger.log(Level.SEVERE, "Error: Couldn't retrieve image for selected plant: {0}", imagePath);
+            } else {
+                selectedPlantImage = new Image(imageUrl.toExternalForm());
+                plantType = type;
+                logger.log(Level.INFO, "Selected plant: " + type);
+            }
         }
 
     }
@@ -771,18 +794,29 @@ public class PlantGridController {
         }
     }
 
+    private String getPlantNameForPlantID(String plantID) {
+        return switch (plantID) {
+            case "Plant1" -> "Sunflower";
+            case "Plant2" -> "Jasmine";
+            case "Plant3" -> "Pomegranate";
+            case null, default -> "Plant4";
+        };
+    }
+
+
+
     private void plantSelectedPlant(int row, int col, ImageView imageView, HBox healthBarContainer, Rectangle healthBar, Label healthLabel, HBox waterBarContainer, Rectangle waterBar, Label waterLabel, HBox nutrientBarContainer, Rectangle nutrientBar, Label nutrientLabel) {
         int key = getKey(row,col);
         if(plantGridMap.get(key) != null){
             return;
         }
-        if (selectedPlantImage != null && plantType != null) {
+        if (selectedPlantImage != null && plantType != null & isSelectPlant) {
             imageView.setImage(selectedPlantImage);
             imageView.setVisible(true);
             if(plantType != null){
-                if(plantType.equals("Plant1")) gardenHandler.addPlant(key, new Plant1(key));
-                if(plantType.equals("Plant2")) gardenHandler.addPlant(key, new Plant2(key));
-                if (plantType.equals("Plant3")) gardenHandler.addPlant(key, new Plant3(key));
+                if(plantType.equals(getPlantNameForPlantID("Plant1"))) gardenHandler.addPlant(key, new Plant1(key));
+                if(plantType.equals(getPlantNameForPlantID("Plant2"))) gardenHandler.addPlant(key, new Plant2(key));
+                if (plantType.equals(getPlantNameForPlantID("Plant3"))) gardenHandler.addPlant(key, new Plant3(key));
             }
 
             updateBar(healthBar, healthLabel, gardenHandler.getPlant(key).getHealth());
@@ -795,6 +829,7 @@ public class PlantGridController {
             System.out.println("Planted " + plantType + " at (" + (row+1) + "," + (col+1) + ")");
             StackPane tileContainer = (StackPane) gridPane.getChildren().get(key);
             tileContainer.setStyle("-fx-background-color: #7c9a5f; -fx-padding: 0px; -fx-border-width: 0;");
+            isSelectPlant = !isSelectPlant;
 //            logger.log(Level.INFO, "Planted "+ selectedPlantObject.getClass().getSimpleName() +" at (" + (row+1) + "," + (col+1) + ")");
 //            printGridDetails();
 
