@@ -551,13 +551,13 @@ public class PlantGridController {
     // Setup plant selection buttons
     private void setupPlantSelection() {
         plantType1.setOnAction(event -> {
-            selectPlant("/images/plant.jpg", "Sunflower");
+            selectPlant("/images/sunflower.jpg", "Sunflower");
         });
         plantType2.setOnAction(event -> {
-            selectPlant("/images/plant2.jpg", "Jasmine");
+            selectPlant("/images/jasmine.png", "Jasmine");
         });
         plantType3.setOnAction(event -> {
-            selectPlant("/images/plant3.jpg", "Pomegranate");
+            selectPlant("/images/pomegranate.jpg", "Pomegranate");
         });
     }
 
