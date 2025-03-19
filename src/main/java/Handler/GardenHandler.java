@@ -104,7 +104,7 @@ public class GardenHandler {
 
     public void changeHealth(Plant plant){
 
-        System.out.println(plant.getWaterLevel() + " " + plant.getHealth());
+//        System.out.println(plant.getWaterLevel() + " " + plant.getHealth());
         int health = plant.getWaterLevel()+plant.getFertilizerLevel();
         health = health/2;
         if(plant.getSensor().isInfected()) {
@@ -182,7 +182,7 @@ public class GardenHandler {
                 int waterLevel = (int) (plant.getWaterLevel() - (delta * Math.random()));
                 if(waterLevel > 100) waterLevel = 100;
                 plant.setWaterLevel(waterLevel);
-                System.out.println(plant.getWaterLevel());
+//                System.out.println(plant.getWaterLevel());
             }
 
         }

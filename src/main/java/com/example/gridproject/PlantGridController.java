@@ -128,10 +128,10 @@ public class PlantGridController {
     private ScheduledExecutorService scheduler;
 
     public void initialize() {
-        gifSunny = new Image(Objects.requireNonNull(getClass().getResource("/images/sunCool.gif")).toExternalForm(), true);
-        gifRainy = new Image(Objects.requireNonNull(getClass().getResource("/images/rain1.gif")).toExternalForm(), true);
-        gifCloudy = new Image(Objects.requireNonNull(getClass().getResource("/images/cloudyWO_BG.gif")).toExternalForm(), true);
-        gifClear = new Image(Objects.requireNonNull(getClass().getResource("/images/clear.gif")).toExternalForm(), true);
+        gifSunny = new Image(Objects.requireNonNull(getClass().getResource("/images/sunnyImage.png")).toExternalForm(), true);
+        gifRainy = new Image(Objects.requireNonNull(getClass().getResource("/images/rainImage.png")).toExternalForm(), true);
+        gifCloudy = new Image(Objects.requireNonNull(getClass().getResource("/images/cloudyImage.png")).toExternalForm(), true);
+        gifClear = new Image(Objects.requireNonNull(getClass().getResource("/images/clearImage.png")).toExternalForm(), true);
 
         // Set initial weather image
         if (currentWeatherGif != null) {
@@ -151,9 +151,9 @@ public class PlantGridController {
         removeTrigger();
         weatherPanel = new HBox();
 
-        loadImage(plantImage1, "images/plant.jpg");
-        loadImage(plantImage2, "images/plant2.jpg");
-        loadImage(plantImage3, "images/plant3.jpg");
+        loadImage(plantImage1, "images/sunflower.jpg");
+        loadImage(plantImage2, "images/jasmine.png");
+        loadImage(plantImage3, "images/pomegranate.jpg");
         loadImage(waterDrop, "images/waterdrop.jpg");
         loadImage(manure, "images/fertilizer.png");
         loadImage(removePlantImage, "images/remove.jpg");
