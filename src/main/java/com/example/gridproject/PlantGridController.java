@@ -623,9 +623,19 @@ public class PlantGridController {
 
     }
 
+    private String getPestForPlant(String pest){
+        return switch (pest) {
+            case "Pest 1" -> "Plant1";
+            case "Pest 2" -> "Plant2";
+            case "Pest 3" -> "Plant3";
+            case null, default -> "Plant4";
+        };
+
+    }
+
     private void sprayPesticide(int r, int c){
         int key = getKey(r,c);
-        selectedPesticide = pesticideComboBox.getValue();
+        selectedPesticide = getPestForPlant(pesticideComboBox.getValue());
         if(selectedPesticide!=null && gardenHandler.hasPlant(key)){
             gardenHandler.addPesticide(gardenHandler.getPlant(key), selectedPesticide);
             updateGrid(r, c);
