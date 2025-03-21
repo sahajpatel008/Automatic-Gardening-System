@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane fx:controller="com.example.gridproject.PlantGridController"
+            xmlns:fx="http://javafx.com/fxml/1">
+    <top>
+        <HBox fx:id="weatherPanel" spacing="20" alignment="CENTER" style="-fx-background-color: transparent; -fx-padding: 10px;">
+            <StackPane>
+                <ImageView fx:id="currentWeatherGif" fitWidth="2500" fitHeight="120"/>
+                <VBox alignment="CENTER">
+                    <Label fx:id="weatherLabel" text="Weather: Clear" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
+                    <Label fx:id="tempLabel" text="Temp: 59°F" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
+                    <Label fx:id="dayLabel" text="Day: 1" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
+                </VBox>
+            </StackPane>
+        </HBox>
+    </top>
+    <!-- Sidebar on the left -->
+    <left>
+        <ScrollPane fitToWidth="true" fitToHeight="true">
+        <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #D2B48C;" alignment="CENTER" maxHeight="Infinity">
+            <Label text="Select a Plant" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+            <Button fx:id="plantType1" text="Sunflower">
+                <graphic>
+                    <ImageView fitWidth="50" fitHeight="50" fx:id="plantImage1"/>
+                </graphic>
+            </Button>
+
+            <Button fx:id="plantType2" text="Jasmine">
+                <graphic>
+                    <ImageView fitWidth="50" fitHeight="50" fx:id="plantImage2"/>
+                </graphic>
+            </Button>
+
+            <Button fx:id="plantType3" text="Pomegranate">
+                <graphic>
+                    <ImageView fitWidth="50" fitHeight="50" fx:id="plantImage3"/>
+                </graphic>
+            </Button>
+
+            <Label text="Select Pesticide"/>
+            <ComboBox fx:id="pesticideComboBox" prefWidth="150"/>
+
+            <Button fx:id="waterButton" text="Water">
+                <graphic>
+                    <ImageView fitWidth="50" fitHeight="50" fx:id="waterDrop"/>
+                </graphic>
+            </Button>
+
+
+            <Button fx:id="fertilizerButton" text="Fertilizer">
+                <graphic>
+                    <ImageView fitWidth="50" fitHeight="50" fx:id="manure"/>
+                </graphic>
+            </Button>
+
+            <Button fx:id="removePlantButton" text="Remove Plant">
+                <graphic>
+                    <ImageView fitWidth="50" fitHeight="50" fx:id="removePlantImage"/>
+                </graphic>
+            </Button>
+        </VBox>
+        </ScrollPane>
+    </left>
+
+    <center>
+        <ScrollPane fx:id="gridScrollPane" fitToWidth="true" fitToHeight="true" pannable="true">
+        <HBox alignment="CENTER" style="-fx-background-color: #D2B48C">
+            <Separator orientation="VERTICAL" style="-fx-padding: 0; -fx-border-width:1px; -fx-border-color: black;" />
+
+            <Region HBox.hgrow="ALWAYS"/>
+            <GridPane fx:id="gridPane" hgap="5" vgap="5" alignment="CENTER" style="-fx-border-width: 0; -fx-background-color: #D2B48C;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+
+        </HBox>
+        </ScrollPane>
+        <!-- Vertical separator between grid and event log -->
+
+    </center>
+
+    <!-- Grid in the center -->
+<!--    <center>-->
+
+<!--    </center>-->
+
+    <right>
+        <HBox alignment="CENTER" style="-fx-background-color: #D2B48C">
+        <Separator orientation="VERTICAL" style="-fx-padding: 0; -fx-border-width: 1px; -fx-border-color: black;"/>
+        <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #D2B48C;" alignment="TOP_RIGHT">
+            <Label text="Event Log:" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <TextArea fx:id="logTextArea" editable="false" wrapText="true" prefWidth="250" prefHeight="400"/>
+        </VBox>
+        </HBox>
+    </right>
+</BorderPane>
+
+
+        <!--previous code-->
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<?import javafx.scene.layout.GridPane?>-->
+<!--<?import javafx.scene.control.Button?>-->
+
+<!--<GridPane fx:id="gridPane" fx:controller="com.example.gridproject.PlantGridController"-->
+<!--          xmlns:fx="http://javafx.com/fxml/1" hgap="10" vgap="10" alignment="CENTER">-->
+<!--    &lt;!&ndash; The controller will dynamically populate this grid &ndash;&gt;-->
+<!--</GridPane>-->
+
+
+<!--previous code-->
+        <!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<?import javafx.scene.layout.GridPane?>-->
+<!--<?import javafx.scene.image.ImageView?>-->
+<!--<?import javafx.scene.control.Label?>-->
+<!--<?import javafx.scene.layout.VBox?>-->
+
+<!--<GridPane fx:controller="com.example.gridproject.PlantGridController"-->
+<!--          xmlns:fx="http://javafx.com/fxml/1" hgap="10" vgap="10" alignment="CENTER">-->
+<!--    <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="CENTER" spacing="5">-->
+<!--        <ImageView fx:id="plantImage00" fitWidth="80" fitHeight="80"/>-->
+<!--        <Label text="Health: 100" fx:id="healthLabel00"/>-->
+<!--        <Label text="Water: 50" fx:id="waterLabel00"/>-->
+<!--    </VBox>-->
+
+<!--    <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" alignment="CENTER" spacing="5">-->
+<!--        <ImageView fx:id="plantImage01" fitWidth="80" fitHeight="80"/>-->
+<!--        <Label text="Health: 100" fx:id="healthLabel00"/>-->
+<!--        <Label text="Water: 50" fx:id="waterLabel00"/>-->
+<!--    </VBox>-->
+<!--</GridPane>-->
