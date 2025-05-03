@@ -49,4 +49,6 @@ The key components of the implementation include:
 
 Here's the UI:
 ![GUI](Images/GUI.png)
-![AGS](Images/AGS.png)
+<div style="text-align: center;">
+    <img width="100%" src="Images/AGS.png">
+</div>
