@@ -49,6 +49,6 @@ The key components of the implementation include:
 
 Here's the UI:
 ![GUI](Images/GUI.png)
-<div style="text-align: center;">
-    <img src="Images/AGS.png">
-</div>
+<p align="center">
+  <img src="Images/AGS.png" alt="AGS" />
+</p>
